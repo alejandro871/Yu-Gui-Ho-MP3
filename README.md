@@ -1,4 +1,4 @@
-# 🃏 Mini Proyecto 2 — Yu-Gi-Oh! Simulador GUI
+# 🃏 Mini Proyecto 3 — Yu-Gi-Oh! Simulador GUI
 
 ## Integrantes
 

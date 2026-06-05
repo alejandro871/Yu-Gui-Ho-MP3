@@ -70,7 +70,7 @@ public void recibirDanio(int danio) {
     int danioReal = Math.max(0, danio);
     setVida(this.vida - danioReal);
 
-    System.out.println("  " + nombre + " recibe " + danioReal
+    System.out.println(nombre + " recibe " + danioReal
             + " puntos de danio.  LP restantes: " + vida);
 }
 
@@ -192,7 +192,7 @@ public boolean colocarTrampa(CartaTrampa trampa) {
     atacante.marcarComoAtacado(); 
 
     if (enemigo.getCampo().isEmpty()) {
-        System.out.println("  ⚔ Ataque directo! " + atacante.getNombre()
+        System.out.println("  Ataque directo! " + atacante.getNombre()
                 + " ataca a " + enemigo.getNombre()
                 + " por " + atacante.getAtk() + " puntos!");
 
@@ -207,7 +207,7 @@ public boolean colocarTrampa(CartaTrampa trampa) {
         return false;
     }
 
-    System.out.println("  ⚔ " + atacante.getNombre() + " (ATK:" + atacante.getAtk()
+    System.out.println("   " + atacante.getNombre() + " (ATK:" + atacante.getAtk()
             + ") ataca a " + defensor.getNombre()
             + " (" + (defensor.isEnPosicionAtaque()
                     ? "ATK:" + defensor.getAtk()
@@ -328,7 +328,7 @@ public void eliminarMonstruo(Monstruo monstruo) {
             cementerio.add(monstruo);
 
             System.out.println("  " + monstruo.getNombre()
-                    + " fue enviado al cementerio de " + nombre + ".");
+                    + " fue enviado al cementerio de " + nombre );
         }
     }
 
