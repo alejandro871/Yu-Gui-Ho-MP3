@@ -7,7 +7,6 @@ import cartas.Carta;
 import cartas.Monstruo;
 import cartas.CartaMagica;
 import cartas.CartaTrampa;
-import efectos.Contexto;
 
 public class Jugador {
 
@@ -16,27 +15,25 @@ public class Jugador {
     private final String nombre;
     private int vida;
 
-    private final ArrayList<Carta>      mano;
-    private final ArrayList<Carta>      mazo;
-    private final ArrayList<Monstruo>   campo;
-    private final ArrayList<Carta>      cementerio;
+    private final ArrayList<Carta> mano;
+    private final ArrayList<Carta> mazo;
+    private final ArrayList<Monstruo> campo;
+    private final ArrayList<Carta> cementerio;
     private final ArrayList<CartaTrampa> trampas;
 
     private boolean cartaJugadaEsteTurno;
 
 
     public Jugador(String nombre) {
-        this.nombre               = nombre;
-        this.vida                 = VIDA_MAXIMA;
-        this.mano                 = new ArrayList<>();
-        this.mazo                 = new ArrayList<>();
-        this.campo                = new ArrayList<>();
-        this.cementerio           = new ArrayList<>();
-        this.trampas              = new ArrayList<>();
+        this.nombre = nombre;
+        this.vida = VIDA_MAXIMA;
+        this.mano  = new ArrayList<>();
+        this.mazo = new ArrayList<>();
+        this.campo = new ArrayList<>();
+        this.cementerio = new ArrayList<>();
+        this.trampas = new ArrayList<>();
         this.cartaJugadaEsteTurno = false;
     }
-
-    // ─── Mazo y mano ─────────────────────────────────────────────────────
 
     public void agregarCarta(Carta carta) {
         mazo.add(carta);

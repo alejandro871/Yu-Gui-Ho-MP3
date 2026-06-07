@@ -14,7 +14,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class VentanaDuelo extends JFrame implements vistaJuego {
