@@ -1,4 +1,4 @@
-
+package CONTROLADOR;
 import VISTA.vistaConsola;
 import VISTA.vistaJuego;
 import cartas.Carta;
@@ -9,9 +9,9 @@ import efectos.Contexto;
 import juego.Juego;
 import jugadores.Jugador;
 
+
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class controladorJuego {
 
@@ -20,18 +20,17 @@ public class controladorJuego {
     private boolean yaRoboEsteTurno;
 
     public controladorJuego(Juego juego, vistaJuego vista) {
-        this.juego            = juego;
-        this.vista            = vista;
-        this.yaRoboEsteTurno  = false;
+        this.juego = juego;
+        this.vista = vista;
+        this.yaRoboEsteTurno = false;
     }
 
-    public Juego   getJuego()              { return juego; }
-    public boolean isYaRoboEsteTurno()     { return yaRoboEsteTurno; }
-
+    public Juego   getJuego() { return juego; }
+    public boolean isYaRoboEsteTurno() { return yaRoboEsteTurno; }
 
     public boolean accionRobar() {
         if (yaRoboEsteTurno) {
-            vista.mostrarMensaje("Ya robaste una carta este turno.");
+            vista.mostrarMensaje("  Ya robaste una carta este turno.");
             return true;
         }
 
@@ -42,13 +41,13 @@ public class controladorJuego {
 
         if (!puedeRobar) {
             vista.actualizarEstado(juego);
-            return false;  
+            return false;   // jugador eliminado por mazo vacío
         }
 
         List<Carta> mano = actual.getMano();
         if (!mano.isEmpty()) {
             Carta robada = mano.get(mano.size() - 1);
-            vista.mostrarMensaje("-> Robaste: " + robada.getNombre()
+            vista.mostrarMensaje("  → Robaste: " + robada.getNombre()
                     + "  [" + robada.getTipo() + "]");
         }
 
@@ -62,11 +61,11 @@ public class controladorJuego {
         Jugador enemigo = juego.getJugadorEnemigo();
 
         if (!yaRoboEsteTurno) {
-            vista.mostrarMensaje("Debes robar tu carta primero (Fase de Robo).");
+            vista.mostrarMensaje("  Debes robar tu carta primero (Fase de Robo).");
             return;
         }
         if (actual.yaJugoCartaEsteTurno()) {
-            vista.mostrarMensaje("Ya jugaste una carta este turno. Solo se permite 1 por turno.");
+            vista.mostrarMensaje("  Ya jugaste una carta este turno. Solo se permite 1 por turno.");
             return;
         }
 
@@ -87,15 +86,15 @@ public class controladorJuego {
         Jugador enemigo = juego.getJugadorEnemigo();
 
         if (!yaRoboEsteTurno) {
-            vista.mostrarMensaje("Primero debes robar tu carta (Fase de Robo).");
+            vista.mostrarMensaje("  Primero debes robar tu carta (Fase de Robo).");
             return;
         }
         if (juego.esPrimerTurno()) {
-            vista.mostrarMensaje("¡En el primer turno no se puede atacar!");
+            vista.mostrarMensaje("  ¡En el primer turno no se puede atacar!");
             return;
         }
         if (actual.getCampo().isEmpty()) {
-            vista.mostrarMensaje("No tienes monstruos en campo para atacar.");
+            vista.mostrarMensaje("  No tienes monstruos en campo para atacar.");
             return;
         }
 
@@ -105,10 +104,11 @@ public class controladorJuego {
         }
 
         if (disponibles.isEmpty()) {
-            vista.mostrarMensaje("Todos tus monstruos ya atacaron este turno.");
+            vista.mostrarMensaje("  Todos tus monstruos ya atacaron este turno.");
             return;
         }
 
+        // 1. Elegir atacante
         Monstruo atacante = vista.elegirMonstruo(disponibles, "Elige tu monstruo atacante");
         if (atacante == null) {
             vista.mostrarMensaje("  Ataque cancelado.");
@@ -127,13 +127,13 @@ public class controladorJuego {
             return;
         }
 
+        // Verificar si el atacante sobrevivió a la trampa
         if (!actual.getCampo().contains(atacante)) {
             vista.mostrarMensaje("  El monstruo atacante fue destruido por una trampa.");
             vista.actualizarEstado(juego);
             verificarFin();
             return;
         }
-
         Monstruo defensor = null;
         if (!enemigo.getCampo().isEmpty()) {
             defensor = vista.elegirMonstruo(
@@ -144,10 +144,7 @@ public class controladorJuego {
                 return;
             }
         } else {
-            boolean confirmar = vista.confirmar(
-                    "¡Ataque Directo!",
-                    enemigo.getNombre() + " no tiene monstruos. ¿Atacar directamente con "
-                            + atacante.getNombre() + " (ATK:" + atacante.getAtk() + ")?");
+            boolean confirmar = vista.confirmar("¡Ataque Directo!", enemigo.getNombre() + " no tiene monstruos. ¿Atacar directamente con " + atacante.getNombre() + " (ATK:" + atacante.getAtk() + ")?");
             if (!confirmar) {
                 vista.mostrarMensaje("  Ataque directo cancelado.");
                 return;
@@ -161,14 +158,14 @@ public class controladorJuego {
 
         actual.atacarConMonstruo(atacante, enemigo, defensor);
 
+        // Reportar diferencias de LP en el log de la vista
         if (enemigo.getVida() < lpEnemigoAntes) {
-            vista.mostrarMensaje("  -> " + enemigo.getNombre()
+            vista.mostrarMensaje("  → " + enemigo.getNombre()
                     + " pierde " + (lpEnemigoAntes - enemigo.getVida()) + " LP  ->  "
                     + enemigo.getVida() + " LP restantes");
         }
         if (actual.getVida() < lpPropioAntes) {
-            vista.mostrarMensaje("  -> " + actual.getNombre()
-                    + " pierde " + (lpPropioAntes - actual.getVida()) + " LP (daño de rebote)");
+            vista.mostrarMensaje("  -> " + actual.getNombre() + " pierde " + (lpPropioAntes - actual.getVida()) + " LP (daño de rebote)");
         }
 
         vista.actualizarEstado(juego);
@@ -179,7 +176,7 @@ public class controladorJuego {
         vista.mostrarMensaje("\n[ Fase Final — "
                 + juego.getJugadorActual().getNombre() + " ]");
 
-        juego.faseFinal();      // cambia el turno y revierte efectos temporales
+        juego.faseFinal(); // cambia el turno, revierte efectos temporales
         yaRoboEsteTurno = false;
 
         String nombreSiguiente = juego.getJugadorActual().getNombre();
@@ -196,12 +193,12 @@ public class controladorJuego {
     public void iniciarBucleConsola() {
         vistaConsola cv = (vista instanceof vistaConsola) ? (vistaConsola) vista : null;
 
-        vista.mostrarMensaje("╔════════════════════════════════════════════════╗");
-        vista.mostrarMensaje("║            ¡¡DUELO INICIADO!!                  ║");
+        vista.mostrarMensaje("╔═════════════════════════════════════════════════╗");
+        vista.mostrarMensaje("║           ¡¡DUELO INICIADO!!                    ║");
         vista.mostrarMensaje("║  " + juego.getJugador1().getNombre()
                 + "  VS  " + juego.getJugador2().getNombre());
         vista.mostrarMensaje("║  ¡" + juego.getJugadorActual().getNombre() + " va primero!");
-        vista.mostrarMensaje("╚════════════════════════════════════════════════╝");
+        vista.mostrarMensaje("╚═════════════════════════════════════════════════╝");
 
         while (!juego.hayGanador()) {
             Jugador actual = juego.getJugadorActual();
@@ -228,7 +225,7 @@ public class controladorJuego {
                         "Turno de " + actual.getNombre(), opciones);
 
                 switch (accion) {
-                    case 0:  // Jugar carta de mano
+                    case 0: 
                         if (cv != null) {
                             int idx = cv.elegirCartaDeMano(actual);
                             if (idx >= 0) accionJugarCarta(actual.getMano().get(idx));
@@ -239,17 +236,17 @@ public class controladorJuego {
                         accionAtacar();
                         break;
 
-                    case 2:  
+                    case 2: 
                         vista.mostrarInfo("Cementerio",
                                 buildCementerioStr(juego.getJugador1(), juego.getJugador2()));
                         break;
 
-                    case 3:  
+                    case 3:
                         turnoTerminado = true;
                         break;
 
                     default:
-                    
+                        
                         break;
                 }
             }
@@ -259,7 +256,7 @@ public class controladorJuego {
             accionTerminarTurno();
         }
 
-        if (!verificarFin()) vista.mostrarGanador(juego);  
+        if (!verificarFin()) vista.mostrarGanador(juego); 
 
         if (vista.ofrecerNuevoDuelo()) {
             reiniciarDuelo(cv);
@@ -274,16 +271,13 @@ public class controladorJuego {
 
         if (monstruo.necesitaSacrificio()) {
             if (actual.getCampo().isEmpty()) {
-                vista.mostrarMensaje( monstruo.getNombre() + " es Nivel "
-                        + monstruo.getNivel() + " y necesita sacrificio."
-                        + " ¡No tienes monstruos en campo!");
+                vista.mostrarMensaje("  " + monstruo.getNombre() + " es Nivel " + monstruo.getNivel() + " y necesita sacrificio." + " ¡No tienes monstruos en campo!");
                 return;
             }
 
             Monstruo sacrificio = vista.elegirMonstruo(
                     new ArrayList<>(actual.getCampo()),
-                    monstruo.getNombre() + " (Nivel " + monstruo.getNivel()
-                            + ") necesita sacrificio. Elige monstruo a sacrificar");
+                    monstruo.getNombre() + " (Nivel " + monstruo.getNivel() + ") necesita sacrificio. Elige monstruo a sacrificar");
             if (sacrificio == null) {
                 vista.mostrarMensaje("  Invocación cancelada.");
                 return;
@@ -291,18 +285,13 @@ public class controladorJuego {
 
             boolean ok = actual.invocarMonstruo(monstruo, sacrificio);
             if (ok) {
-                vista.mostrarMensaje("  " + sacrificio.getNombre() + " sacrificado.");
-                vista.mostrarMensaje("  ¡" + monstruo.getNombre() + " invocado!"
-                        + "  ATK:" + monstruo.getAtk()
-                        + "  DEF:" + monstruo.getDef()
-                        + "  Nivel:" + monstruo.getNivel());
+                vista.mostrarMensaje( sacrificio.getNombre() + " sacrificado.");
+                vista.mostrarMensaje( monstruo.getNombre() + " invocado!" + "  ATK:" + monstruo.getAtk() + "  DEF:" + monstruo.getDef() + "  Nivel:" + monstruo.getNivel());
             }
         } else {
             boolean ok = actual.invocarMonstruo(monstruo);
             if (ok) {
-                vista.mostrarMensaje("  ★ ¡" + monstruo.getNombre() + " invocado al campo!"
-                        + "  ATK:" + monstruo.getAtk()
-                        + "  DEF:" + monstruo.getDef());
+                vista.mostrarMensaje(monstruo.getNombre() + " invocado al campo!" + "  ATK:" + monstruo.getAtk() + "  DEF:" + monstruo.getDef());
             }
         }
     }
@@ -316,25 +305,25 @@ public class controladorJuego {
 
         if (carta.necesitaMonstruoPropio()) {
             if (actual.getCampo().isEmpty()) {
-                vista.mostrarMensaje("  Esta magia necesita un monstruo propio en campo");
+                vista.mostrarMensaje("  Esta magia necesita un monstruo propio en campo.");
                 return;
             }
             Monstruo objetivo = vista.elegirMonstruo(
                     new ArrayList<>(actual.getCampo()),
                     "Elige tu monstruo objetivo para " + carta.getNombre());
-            if (objetivo == null) { vista.mostrarMensaje("  Cancelado"); return; }
+            if (objetivo == null) { vista.mostrarMensaje("  Cancelado."); return; }
             ctx.setMonstruoPropio(objetivo);
         }
 
         if (carta.necesitaMonstruoEnemigo()) {
             if (enemigo.getCampo().isEmpty()) {
-                vista.mostrarMensaje("  Esta magia necesita un monstruo enemigo en campo");
+                vista.mostrarMensaje("  Esta magia necesita un monstruo enemigo en campo.");
                 return;
             }
             Monstruo objetivo = vista.elegirMonstruo(
                     new ArrayList<>(enemigo.getCampo()),
                     "Elige el monstruo enemigo objetivo para " + carta.getNombre());
-            if (objetivo == null) { vista.mostrarMensaje("  Cancelado"); return; }
+            if (objetivo == null) { vista.mostrarMensaje("  Cancelado."); return; }
             ctx.setMonstruoEnemigo(objetivo);
         }
 
@@ -345,7 +334,6 @@ public class controladorJuego {
         }
     }
 
-    /** Coloca una trampa boca abajo en el campo. */
     private void procesarColocarTrampa(CartaTrampa trampa, Jugador actual) {
         vista.mostrarMensaje("\n[ Colocar Trampa ]");
         boolean ok = actual.colocarTrampa(trampa);
@@ -355,13 +343,13 @@ public class controladorJuego {
     }
 
     public Contexto procesarTrampasEnemigas(Jugador defensivo, Jugador atacante, Monstruo mAtacante) {
-        // Filtrar trampas que aún no fueron usadas
         List<CartaTrampa> disponibles = new ArrayList<>();
         for (CartaTrampa t : defensivo.getTrampas()) {
             if (!t.fueActivada()) disponibles.add(t);
         }
 
         if (disponibles.isEmpty()) return null;
+
 
         vista.mostrarMensaje("\n  ► " + defensivo.getNombre()
                 + ", tienes trampas disponibles. ¿Deseas activar alguna?");
@@ -379,7 +367,7 @@ public class controladorJuego {
         defensivo.getTrampas().remove(elegida);
         defensivo.agregarAlCementerio(elegida);
 
-        vista.mostrarMensaje("  ¡¡ TRAMPA ACTIVADA !! -> " + elegida.getNombre());
+        vista.mostrarMensaje("  ¡¡ TRAMPA ACTIVADA !! → " + elegida.getNombre());
         vista.mostrarMensaje("     " + elegida.getDescripcion());
 
         return ctx;

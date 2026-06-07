@@ -1,83 +1,267 @@
 package VISTA;
 
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-
-import  jugadores.Mazo;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-
+import CONTROLADOR.controladorJuego;
 import cartas.Carta;
 import cartas.CartaMagica;
 import cartas.CartaTrampa;
 import cartas.Monstruo;
-import efectos.Contexto;
 import juego.Juego;
 import jugadores.Jugador;
+import jugadores.Mazo;
 
-public class VentanaDuelo extends JFrame {
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
-    
-    private static final Color FONDO_OSCURO          = new Color(8, 8, 25);
-    private static final Color FONDO_PANEL           = new Color(15, 15, 40);
-    private static final Color FONDO_PANEL_ENEMIGO   = new Color(30, 8, 8);
-    private static final Color FONDO_PANEL_JUGADOR   = new Color(8, 20, 8);
-    private static final Color COLOR_DORADO          = new Color(255, 215, 0);
-    private static final Color COLOR_DORADO_OSCURO   = new Color(160, 120, 0);
-    private static final Color COLOR_TEXTO           = new Color(210, 210, 240);
-    private static final Color COLOR_LP_NORMAL       = new Color(50, 200, 50);
-    private static final Color COLOR_LP_BAJO         = new Color(220, 50, 50);
-    private static final Color COLOR_LP_MEDIO        = new Color(220, 180, 0);
-    private static final Color COLOR_CARTA_MONSTRUO  = new Color(20, 40, 80);
-    private static final Color COLOR_CARTA_MAGIA     = new Color(10, 60, 30);
-    private static final Color COLOR_CARTA_TRAMPA    = new Color(50, 10, 50);
-    private static final Color COLOR_BORDE           = new Color(80, 60, 10);
-    private static final Color COLOR_LOG_FONDO       = new Color(5, 5, 20);
+public class VentanaDuelo extends JFrame implements vistaJuego {
 
-    private Juego juegoActual;
-    private Jugador jugador1;
-    private Jugador jugador2;
-    private boolean yaRoboEsteTurno = false;
-    private JLabel labelNombreJ1;
-    private JLabel labelLpJ1;
-    private JLabel labelNombreJ2;
-    private JLabel labelLpJ2;
-    private JLabel labelTurnoActual;
-    private JLabel labelFase;
-    private JPanel panelCampoOponente;
-    private JPanel panelCampoJugador;
+    private static final Color FONDO_OSCURO = new Color(8,   8,  25);
+    private static final Color FONDO_PANEL = new Color(15, 15,  40);
+    private static final Color FONDO_PANEL_ENEMIGO = new Color(30,  8,   8);
+    private static final Color FONDO_PANEL_JUGADOR = new Color( 8, 20,   8);
+    private static final Color COLOR_DORADO = new Color(255, 215,  0);
+    private static final Color COLOR_DORADO_OSCURO_COLOR = new Color(160, 120,  0);
+    private static final Color COLOR_TEXTO = new Color(210, 210, 240);
+    private static final Color COLOR_LP_NORMAL = new Color( 50, 200,  50);
+    private static final Color COLOR_LP_BAJO = new Color(220,  50,  50);
+    private static final Color COLOR_LP_MEDIO = new Color(220, 180,   0);
+    private static final Color COLOR_CARTA_MONSTRUO = new Color( 20,  40,  80);
+    private static final Color COLOR_CARTA_MAGIA = new Color( 10,  60,  30);
+    private static final Color COLOR_CARTA_TRAMPA = new Color( 50,  10,  50);
+    private static final Color COLOR_BORDE = new Color( 80,  60,  10);
+    private static final Color COLOR_LOG_FONDO = new Color(  5,   5,  20);
+    private static final Color COLOR_DORADO_OSCURO = new Color(160, 120,  0);
+
+    private final Juego juego;
+    private final Jugador jugador1;
+    private final Jugador jugador2;
+    private final controladorJuego controlador;
+
+    private JLabel labelNombreJ1, labelLpJ1, labelMazoJ1;
+    private JLabel labelNombreJ2, labelLpJ2, labelMazoJ2;
+    private JLabel labelTurnoActual, labelFase;
     private JLabel labelTrampasOponente;
-    private JPanel panelManoJugador;
+    private JPanel panelCampoOponente, panelCampoJugador, panelManoJugador;
     private JTextArea areaLog;
-    private JButton botonRobarCarta;
-    private JButton botonTerminarTurno;
-    private JLabel labelMazoJ1;
-    private JLabel labelMazoJ2;
+    private JButton botonRobar, botonTerminarTurno;
 
-    public VentanaDuelo(String nombreDuelista1, String nombreDuelista2) {
-        super("Yu-Gi-Oh! Duelo — " + nombreDuelista1 + " VS " + nombreDuelista2);
+    public VentanaDuelo(String nombre1, String nombre2) {
+        super("Yu-Gi-Oh! — " + nombre1 + " VS " + nombre2);
 
-        jugador1 = new Jugador(nombreDuelista1);
-        jugador2 = new Jugador(nombreDuelista2);
+        jugador1 = new Jugador(nombre1);
+        jugador2 = new Jugador(nombre2);
         Mazo.repartir(jugador1, jugador2);
+        juego = new Juego(jugador1, jugador2);
 
-        juegoActual = new Juego(jugador1, jugador2);
+        controlador = new controladorJuego(juego, this);
 
         inicializarVentana();
         construirUI();
-        actualizarTodaLaUI();
+        actualizarEstado(juego);
 
         registrarEnLog("════════════════════════════════════════");
-        registrarEnLog("   ¡¡ DUELO INICIADO !! ");
-        registrarEnLog("  " + jugador1.getNombre() + " VS " + jugador2.getNombre());
-        registrarEnLog("  El azar decide... ¡" + juegoActual.getJugadorActual().getNombre() + " va primero!");
+        registrarEnLog("   ¡¡ DUELO INICIADO !!  ");
+        registrarEnLog("  " + nombre1 + " VS " + nombre2);
+        registrarEnLog("  ¡" + juego.getJugadorActual().getNombre() + " va primero!");
         registrarEnLog("════════════════════════════════════════");
-        registrarEnLog("  Fase: INICIO DEL TURNO");
-        registrarEnLog("  → Presiona 'Robar Carta' para comenzar.");
+        registrarEnLog("  → Presiona 'Robar Carta' para comenzar");
+    }
+
+    @Override
+    public void mostrarMensaje(String mensaje) {
+        registrarEnLog(mensaje);
+    }
+
+    @Override
+    public void actualizarEstado(Juego juego) {
+        actualizarPanelLP();
+        actualizarCampoOponente();
+        actualizarCampoJugador();
+        actualizarManoJugador();
+        labelTurnoActual.setText("TURNO: " + juego.getJugadorActual().getNombre().toUpperCase());
+    }
+
+    @Override
+    public int elegirOpcionMenu(String titulo, String[] opciones) {
+        String elegida = (String) JOptionPane.showInputDialog(
+                this, titulo, "Acción",
+                JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+        if (elegida == null) return -1;
+        for (int i = 0; i < opciones.length; i++) {
+            if (opciones[i].equals(elegida)) return i;
+        }
+        return -1;
+    }
+
+    @Override
+    public Monstruo elegirMonstruo(List<Monstruo> lista, String titulo) {
+        if (lista.isEmpty()) return null;
+
+        String[] ops = new String[lista.size()];
+        for (int i = 0; i < lista.size(); i++) {
+            Monstruo m = lista.get(i);
+            String pos = m.isEnPosicionAtaque() ? "ATQ" : "DEF";
+            ops[i] = m.getNombre() + "  Lv." + m.getNivel()
+                    + " [" + pos + "]  ATK:" + m.getAtk() + " DEF:" + m.getDef();
+        }
+
+        String elegida = (String) JOptionPane.showInputDialog(
+                this, titulo, "Elige monstruo",
+                JOptionPane.QUESTION_MESSAGE, null, ops, ops[0]);
+        if (elegida == null) return null;
+
+        for (int i = 0; i < ops.length; i++) {
+            if (ops[i].equals(elegida)) return lista.get(i);
+        }
+        return null;
+    }
+
+    @Override
+    public CartaTrampa elegirTrampa(List<CartaTrampa> lista, String titulo) {
+        if (lista.isEmpty()) return null;
+
+        String[] ops = new String[lista.size() + 1];
+        ops[0] = "No activar ninguna trampa";
+        for (int i = 0; i < lista.size(); i++) {
+            ops[i + 1] = lista.get(i).getNombre() + " — " + lista.get(i).getDescripcion();
+        }
+
+        String elegida = (String) JOptionPane.showInputDialog(
+                this, titulo, "¡¡ TRAMPA !!",
+                JOptionPane.WARNING_MESSAGE, null, ops, ops[0]);
+
+        if (elegida == null || elegida.equals(ops[0])) return null;
+
+        for (int i = 0; i < lista.size(); i++) {
+            if (ops[i + 1].equals(elegida)) return lista.get(i);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean confirmar(String titulo, String mensaje) {
+        int resp = JOptionPane.showConfirmDialog(this, mensaje, titulo, JOptionPane.YES_NO_OPTION);
+        return resp == JOptionPane.YES_OPTION;
+    }
+
+    @Override
+    public void mostrarGanador(Juego juego) {
+        String ganador    = juego.getNombreGanador();
+        Jugador jGan      = juego.getGanador();
+        Jugador jPerdedor = (jGan == jugador1) ? jugador2 : jugador1;
+
+        registrarEnLog("");
+        registrarEnLog("════════════════════════════════════════");
+        registrarEnLog("   FIN DEL DUELO ");
+        registrarEnLog("  ¡¡ " + ganador + " GANA EL DUELO !!");
+        registrarEnLog("  LP finales: " + jGan.getNombre() + " → " + jGan.getVida());
+        registrarEnLog("  LP finales: " + jPerdedor.getNombre() + " → " + jPerdedor.getVida());
+        registrarEnLog("════════════════════════════════════════");
+
+        botonRobar.setEnabled(false);
+        botonTerminarTurno.setEnabled(false);
+
+        JOptionPane.showMessageDialog(this,
+                "  FIN DEL DUELO  \n\n"
+                + "¡¡ " + ganador.toUpperCase() + " GANA EL DUELO !!\n\n"
+                + jGan.getNombre() + " termina con " + jGan.getVida() + " LP\n"
+                + jPerdedor.getNombre() + " termina con " + jPerdedor.getVida() + " LP\n\n"
+                + "\"GG buena partida\"\n— Yugioh",
+                "¡Duelo Terminado!", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    @Override
+    public boolean ofrecerNuevoDuelo() {
+        int resp = JOptionPane.showConfirmDialog(this,
+                "¿Quieres iniciar un nuevo duelo?",
+                "Nuevo Duelo", JOptionPane.YES_NO_OPTION);
+        if (resp == JOptionPane.YES_OPTION) {
+            this.dispose();
+            new PantallaInicio().setVisible(true);
+            return true;
+        }
+        System.exit(0);
+        return false;
+    }
+
+    @Override
+    public void mostrarInfo(String titulo, String contenido) {
+        JTextArea area = new JTextArea(contenido);
+        area.setEditable(false);
+        area.setBackground(COLOR_LOG_FONDO);
+        area.setForeground(COLOR_TEXTO);
+        area.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        JScrollPane scroll = new JScrollPane(area);
+        scroll.setPreferredSize(new Dimension(380, 280));
+        JOptionPane.showMessageDialog(this, scroll, titulo, JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private void accionRobar() {
+        boolean ok = controlador.accionRobar();
+        if (!ok) {
+            controlador.verificarFin();
+            return;
+        }
+        botonRobar.setEnabled(false);
+        labelFase.setText("[Fase Principal]");
+        if (controlador.verificarFin()) return;
+        ofrecerNuevoDuelo();
+    }
+
+    private void accionJugarCartaDeMano(Carta carta) {
+        if (!controlador.isYaRoboEsteTurno()) {
+            JOptionPane.showMessageDialog(this, "Primero debes robar tu carta",
+                    "Acción no disponible", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        controlador.accionJugarCarta(carta);
+        if (controlador.verificarFin()) ofrecerNuevoDuelo();
+    }
+
+    private void accionAtacar() {
+        controlador.accionAtacar();
+        if (controlador.verificarFin()) ofrecerNuevoDuelo();
+    }
+
+    private void accionTerminarTurno() {
+        if (!controlador.isYaRoboEsteTurno()) {
+            int ok = JOptionPane.showConfirmDialog(this,
+                    "¡No has robado tu carta este turno!  ¿Seguro que quieres terminar?",
+                    "Confirmar", JOptionPane.YES_NO_OPTION);
+            if (ok != JOptionPane.YES_OPTION) return;
+        }
+
+        controlador.accionTerminarTurno();
+
+        botonRobar.setEnabled(true);
+        labelFase.setText("[Inicio del Turno]");
+
+        JOptionPane.showMessageDialog(this,
+                "¡Fin del turno!\n\nAhora le toca a: "
+                        + juego.getJugadorActual().getNombre(),
+                "Cambio de Turno", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void accionCementerio() {
+        Jugador actual  = juego.getJugadorActual();
+        Jugador enemigo = juego.getJugadorEnemigo();
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Cementerio de ").append(actual.getNombre()).append(" ===\n");
+        appendCementerio(sb, actual);
+        sb.append("\n=== Cementerio de ").append(enemigo.getNombre()).append(" ===\n");
+        appendCementerio(sb, enemigo);
+        mostrarInfo(" Cementerio", sb.toString());
+    }
+
+    private void appendCementerio(StringBuilder sb, Jugador j) {
+        if (j.getCementerio().isEmpty()) { sb.append("  (vacío)\n"); return; }
+        for (Carta c : j.getCementerio()) {
+            sb.append("  · ").append(c.getNombre()).append(" [").append(c.getTipo()).append("]\n");
+        }
     }
 
     private void inicializarVentana() {
@@ -90,82 +274,54 @@ public class VentanaDuelo extends JFrame {
     }
 
     private void construirUI() {
-        JPanel panelSuperior = crearPanelSuperior();
-        add(panelSuperior, BorderLayout.NORTH);
+        add(crearPanelSuperior(), BorderLayout.NORTH);
 
-        JSplitPane splitCentral = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitCentral.setBackground(FONDO_OSCURO);
-        splitCentral.setBorder(null);
-        splitCentral.setDividerSize(4);
-        splitCentral.setDividerLocation(700);
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        split.setBackground(FONDO_OSCURO);
+        split.setBorder(null);
+        split.setDividerSize(4);
+        split.setDividerLocation(700);
+        split.setLeftComponent(crearPanelCampoBatalla());
+        split.setRightComponent(crearPanelDerechoLog());
+        add(split, BorderLayout.CENTER);
 
-        JPanel panelCampoBatalla = crearPanelCampoBatalla();
-        splitCentral.setLeftComponent(panelCampoBatalla);
-
-        JPanel panelDerechoCompleto = crearPanelDerechoLog();
-        splitCentral.setRightComponent(panelDerechoCompleto);
-
-        add(splitCentral, BorderLayout.CENTER);
-
-        JPanel panelInferior = crearPanelMano();
-        add(panelInferior, BorderLayout.SOUTH);
+        add(crearPanelMano(), BorderLayout.SOUTH);
     }
 
     private JPanel crearPanelSuperior() {
         JPanel panel = new JPanel(new BorderLayout(10, 0));
         panel.setBackground(new Color(12, 12, 35));
         panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 2, 0, COLOR_DORADO_OSCURO),
-            new EmptyBorder(8, 12, 8, 12)
-        ));
+                BorderFactory.createMatteBorder(0, 0, 2, 0, COLOR_DORADO_OSCURO),
+                new EmptyBorder(8, 12, 8, 12)));
 
-        JPanel panelInfoJ1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        panelInfoJ1.setBackground(new Color(12, 12, 35));
-        labelNombreJ1 = new JLabel("Jugador 1");
-        labelNombreJ1.setFont(new Font("Arial", Font.BOLD, 14));
-        labelNombreJ1.setForeground(COLOR_DORADO);
-        labelLpJ1 = new JLabel("LP: 8000");
-        labelLpJ1.setFont(new Font("Arial", Font.BOLD, 16));
-        labelLpJ1.setForeground(COLOR_LP_NORMAL);
-        labelMazoJ1 = new JLabel("Mazo: 20");
-        labelMazoJ1.setFont(new Font("Arial", Font.PLAIN, 12));
-        labelMazoJ1.setForeground(COLOR_TEXTO);
-        panelInfoJ1.add(labelNombreJ1);
-        panelInfoJ1.add(new JSeparator(JSeparator.VERTICAL) {{ setPreferredSize(new Dimension(2, 20)); setForeground(COLOR_DORADO_OSCURO); }});
-        panelInfoJ1.add(labelLpJ1);
-        panelInfoJ1.add(labelMazoJ1);
+        // Jugador 1 (izquierda)
+        JPanel pJ1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        pJ1.setBackground(new Color(12, 12, 35));
+        labelNombreJ1 = makeLabel("J1", Font.BOLD, 14, COLOR_DORADO);
+        labelLpJ1     = makeLabel("LP: 8000", Font.BOLD, 16, COLOR_LP_NORMAL);
+        labelMazoJ1   = makeLabel("Mazo: 20", Font.PLAIN, 12, COLOR_TEXTO);
+        pJ1.add(labelNombreJ1); pJ1.add(labelLpJ1); pJ1.add(labelMazoJ1);
 
-        JPanel panelCentroTurno = new JPanel(new FlowLayout(FlowLayout.CENTER, 6, 0));
-        panelCentroTurno.setBackground(new Color(12, 12, 35));
-        labelTurnoActual = new JLabel("TURNO DE: ...");
+        // Centro — turno
+        JPanel pCentro = new JPanel(new FlowLayout(FlowLayout.CENTER, 6, 0));
+        pCentro.setBackground(new Color(12, 12, 35));
+        labelTurnoActual = makeLabel("TURNO DE: ...", Font.PLAIN, 18, new Color(255, 255, 180));
         labelTurnoActual.setFont(new Font("Impact", Font.PLAIN, 18));
-        labelTurnoActual.setForeground(new Color(255, 255, 180));
-        labelFase = new JLabel("");
-        labelFase.setFont(new Font("Arial", Font.ITALIC, 13));
-        labelFase.setForeground(new Color(180, 180, 220));
-        panelCentroTurno.add(labelTurnoActual);
-        panelCentroTurno.add(labelFase);
+        labelFase = makeLabel("", Font.ITALIC, 13, new Color(180, 180, 220));
+        pCentro.add(labelTurnoActual); pCentro.add(labelFase);
 
-        JPanel panelInfoJ2 = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        panelInfoJ2.setBackground(new Color(12, 12, 35));
-        labelNombreJ2 = new JLabel("Jugador 2");
-        labelNombreJ2.setFont(new Font("Arial", Font.BOLD, 14));
-        labelNombreJ2.setForeground(new Color(200, 100, 100));
-        labelLpJ2 = new JLabel("LP: 8000");
-        labelLpJ2.setFont(new Font("Arial", Font.BOLD, 16));
-        labelLpJ2.setForeground(COLOR_LP_NORMAL);
-        labelMazoJ2 = new JLabel("Mazo: 20");
-        labelMazoJ2.setFont(new Font("Arial", Font.PLAIN, 12));
-        labelMazoJ2.setForeground(COLOR_TEXTO);
-        panelInfoJ2.add(labelMazoJ2);
-        panelInfoJ2.add(new JSeparator(JSeparator.VERTICAL) {{ setPreferredSize(new Dimension(2, 20)); setForeground(COLOR_DORADO_OSCURO); }});
-        panelInfoJ2.add(labelLpJ2);
-        panelInfoJ2.add(labelNombreJ2);
+        // Jugador 2 (derecha)
+        JPanel pJ2 = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        pJ2.setBackground(new Color(12, 12, 35));
+        labelNombreJ2 = makeLabel("J2", Font.BOLD, 14, new Color(200, 100, 100));
+        labelLpJ2     = makeLabel("LP: 8000", Font.BOLD, 16, COLOR_LP_NORMAL);
+        labelMazoJ2   = makeLabel("Mazo: 20", Font.PLAIN, 12, COLOR_TEXTO);
+        pJ2.add(labelMazoJ2); pJ2.add(labelLpJ2); pJ2.add(labelNombreJ2);
 
-        panel.add(panelInfoJ1, BorderLayout.WEST);
-        panel.add(panelCentroTurno, BorderLayout.CENTER);
-        panel.add(panelInfoJ2, BorderLayout.EAST);
-
+        panel.add(pJ1,     BorderLayout.WEST);
+        panel.add(pCentro, BorderLayout.CENTER);
+        panel.add(pJ2,     BorderLayout.EAST);
         return panel;
     }
 
@@ -174,56 +330,44 @@ public class VentanaDuelo extends JFrame {
         panel.setBackground(FONDO_OSCURO);
         panel.setBorder(new EmptyBorder(6, 6, 6, 3));
 
-        JPanel zonaOponente = new JPanel(new BorderLayout(0, 4));
-        zonaOponente.setBackground(FONDO_PANEL_ENEMIGO);
-        zonaOponente.setBorder(crearBordeTitulado(" Campo del Oponente", new Color(200, 80, 80)));
+        JPanel zonaOp = new JPanel(new BorderLayout(0, 4));
+        zonaOp.setBackground(FONDO_PANEL_ENEMIGO);
+        zonaOp.setBorder(titledBorder(" Campo del Oponente", new Color(200, 80, 80)));
 
-        labelTrampasOponente = new JLabel("  Trampas ocultas: 0  ", SwingConstants.RIGHT);
-        labelTrampasOponente.setFont(new Font("Arial", Font.ITALIC, 11));
-        labelTrampasOponente.setForeground(new Color(180, 100, 180));
+        labelTrampasOponente = makeLabel("  Trampas ocultas: 0  ", Font.ITALIC, 11, new Color(180, 100, 180));
+        labelTrampasOponente.setHorizontalAlignment(SwingConstants.RIGHT);
         labelTrampasOponente.setBorder(new EmptyBorder(2, 0, 2, 6));
 
         panelCampoOponente = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 8));
         panelCampoOponente.setBackground(FONDO_PANEL_ENEMIGO);
         panelCampoOponente.setPreferredSize(new Dimension(0, 120));
+        panelCampoOponente.add(placeholderLabel("(Campo vacío)", new Color(100, 60, 60)));
 
-        JLabel placeholderOponente = new JLabel("(Campo vacío)");
-        placeholderOponente.setForeground(new Color(100, 60, 60));
-        placeholderOponente.setFont(new Font("Arial", Font.ITALIC, 12));
-        panelCampoOponente.add(placeholderOponente);
+        zonaOp.add(labelTrampasOponente, BorderLayout.NORTH);
+        zonaOp.add(panelCampoOponente,   BorderLayout.CENTER);
 
-        zonaOponente.add(labelTrampasOponente, BorderLayout.NORTH);
-        zonaOponente.add(panelCampoOponente, BorderLayout.CENTER);
-
-        JPanel zonaJugador = new JPanel(new BorderLayout(0, 4));
-        zonaJugador.setBackground(FONDO_PANEL_JUGADOR);
-        zonaJugador.setBorder(crearBordeTitulado(" Mi Campo", new Color(80, 200, 80)));
+        // Mi campo
+        JPanel zonaJug = new JPanel(new BorderLayout(0, 4));
+        zonaJug.setBackground(FONDO_PANEL_JUGADOR);
+        zonaJug.setBorder(titledBorder(" Mi Campo", new Color(80, 200, 80)));
 
         panelCampoJugador = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 8));
         panelCampoJugador.setBackground(FONDO_PANEL_JUGADOR);
         panelCampoJugador.setPreferredSize(new Dimension(0, 120));
+        panelCampoJugador.add(placeholderLabel("(Campo vacío)", new Color(60, 100, 60)));
 
-        JLabel placeholderMiCampo = new JLabel("(Campo vacío)");
-        placeholderMiCampo.setForeground(new Color(60, 100, 60));
-        placeholderMiCampo.setFont(new Font("Arial", Font.ITALIC, 12));
-        panelCampoJugador.add(placeholderMiCampo);
+        zonaJug.add(panelCampoJugador, BorderLayout.CENTER);
 
-        zonaJugador.add(panelCampoJugador, BorderLayout.CENTER);
-
-        panel.add(zonaOponente);
-        panel.add(zonaJugador);
-
+        panel.add(zonaOp);
+        panel.add(zonaJug);
         return panel;
     }
-
-
 
     private JPanel crearPanelDerechoLog() {
         JPanel panel = new JPanel(new BorderLayout(0, 6));
         panel.setBackground(FONDO_OSCURO);
         panel.setBorder(new EmptyBorder(6, 3, 0, 6));
 
-        // area de log
         areaLog = new JTextArea();
         areaLog.setEditable(false);
         areaLog.setBackground(COLOR_LOG_FONDO);
@@ -234,670 +378,135 @@ public class VentanaDuelo extends JFrame {
         areaLog.setBorder(new EmptyBorder(6, 6, 6, 6));
 
         JScrollPane scrollLog = new JScrollPane(areaLog);
-        scrollLog.setBorder(crearBordeTitulado(" Log del Duelo", COLOR_DORADO_OSCURO));
+        scrollLog.setBorder(titledBorder(" Log del Duelo", COLOR_DORADO_OSCURO));
         scrollLog.setPreferredSize(new Dimension(0, 300));
-        scrollLog.getVerticalScrollBar().setBackground(FONDO_PANEL);
 
-        JPanel panelBotones = crearPanelBotonesAccion();
-
-        panel.add(scrollLog, BorderLayout.CENTER);
-        panel.add(panelBotones, BorderLayout.SOUTH);
-
+        panel.add(scrollLog,            BorderLayout.CENTER);
+        panel.add(crearPanelBotones(),  BorderLayout.SOUTH);
         return panel;
     }
 
-
-
-    private JPanel crearPanelBotonesAccion() {
+    private JPanel crearPanelBotones() {
         JPanel panel = new JPanel(new GridLayout(2, 2, 6, 6));
         panel.setBackground(FONDO_OSCURO);
         panel.setBorder(BorderFactory.createCompoundBorder(
-            crearBordeTitulado("Acciones", COLOR_DORADO_OSCURO),
-            new EmptyBorder(4, 4, 4, 4)
-        ));
+                titledBorder("Acciones", COLOR_DORADO_OSCURO),
+                new EmptyBorder(4, 4, 4, 4)));
 
-        botonRobarCarta = crearBotonAccion(" Robar Carta", new Color(0, 80, 120));
-        botonRobarCarta.addActionListener(e -> accionRobarCarta());
+        botonRobar = botonAccion("Robar Carta", new Color(0, 80, 120));
+        botonRobar.addActionListener(e -> accionRobar());
 
-        JButton botonAtacarDirecto = crearBotonAccion(" Atacar", new Color(100, 20, 20));
-        botonAtacarDirecto.addActionListener(e -> mostrarMenuAtaque());
+        JButton botonAtacar = botonAccion("Atacar", new Color(100, 20, 20));
+        botonAtacar.addActionListener(e -> accionAtacar());
 
-        JButton botonVerCementerio = crearBotonAccion(" Cementerio", new Color(40, 40, 40));
-        botonVerCementerio.addActionListener(e -> mostrarCementerio());
+        JButton botonCementerio = botonAccion("Cementerio", new Color(40, 40, 40));
+        botonCementerio.addActionListener(e -> accionCementerio());
 
-        botonTerminarTurno = crearBotonAccion(" Terminar Turno", new Color(60, 40, 0));
+        botonTerminarTurno = botonAccion("Terminar Turno", new Color(60, 40, 0));
         botonTerminarTurno.addActionListener(e -> accionTerminarTurno());
 
-        panel.add(botonRobarCarta);
-        panel.add(botonAtacarDirecto);
-        panel.add(botonVerCementerio);
+        panel.add(botonRobar);
+        panel.add(botonAtacar);
+        panel.add(botonCementerio);
         panel.add(botonTerminarTurno);
-
         return panel;
     }
 
-
     private JPanel crearPanelMano() {
-        JPanel panel = new JPanel(new BorderLayout(0, 0));
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(FONDO_OSCURO);
         panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(2, 0, 0, 0, COLOR_DORADO_OSCURO),
-            new EmptyBorder(4, 6, 6, 6)
-        ));
+                BorderFactory.createMatteBorder(2, 0, 0, 0, COLOR_DORADO_OSCURO),
+                new EmptyBorder(4, 6, 6, 6)));
 
-        JLabel labelTituloMano = new JLabel("   MI MANO  ");
-        labelTituloMano.setFont(new Font("Arial", Font.BOLD, 12));
-        labelTituloMano.setForeground(COLOR_DORADO);
-        panel.add(labelTituloMano, BorderLayout.WEST);
+        JLabel tituloMano = makeLabel("   MI MANO  ", Font.BOLD, 12, COLOR_DORADO);
+        panel.add(tituloMano, BorderLayout.WEST);
 
         panelManoJugador = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
         panelManoJugador.setBackground(FONDO_OSCURO);
         panelManoJugador.setPreferredSize(new Dimension(0, 105));
 
-        JScrollPane scrollMano = new JScrollPane(panelManoJugador,
-            JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollMano.setBorder(null);
-        scrollMano.setBackground(FONDO_OSCURO);
-        panel.add(scrollMano, BorderLayout.CENTER);
-
+        JScrollPane scroll = new JScrollPane(panelManoJugador, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scroll.setBorder(null);
+        scroll.setBackground(FONDO_OSCURO);
+        panel.add(scroll, BorderLayout.CENTER);
         return panel;
     }
 
-
-    private void accionRobarCarta() {
-        if (yaRoboEsteTurno) {
-            JOptionPane.showMessageDialog(this,
-                "Ya robaste una carta este turno.",
-                "Acción no disponible", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        Jugador actual = juegoActual.getJugadorActual();
-        registrarEnLog("");
-        registrarEnLog("[ " + actual.getNombre() + " — Fase de Robo ]");
-
-        boolean puedeRobar = juegoActual.faseRobo();
-
-        if (!puedeRobar) {
-            // el jugador perdio por mazo vacio
-            actualizarTodaLaUI();
-            verificarFinDelJuego();
-            return;
-        }
-
-        ArrayList<Carta> manoActual = actual.getMano();
-        if (!manoActual.isEmpty()) {
-            Carta robada = manoActual.get(manoActual.size() - 1);
-            registrarEnLog("  → Robaste: " + robada.getNombre() + " [" + robada.getTipo() + "]");
-        }
-
-        yaRoboEsteTurno = true;
-        botonRobarCarta.setEnabled(false);
-
-        labelFase.setText("[Fase Principal]");
-        actualizarTodaLaUI();
-    }
-
-    private void accionJugarCartaDeMano(Carta carta) {
-        Jugador actual = juegoActual.getJugadorActual();
-        Jugador enemigo = juegoActual.getJugadorEnemigo();
-
-        if (actual.yaJugoCartaEsteTurno()) {
-            JOptionPane.showMessageDialog(this,
-                "Ya jugaste una carta este turno.\nSolo se puede jugar 1 carta por turno.",
-                "Turno limitado", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        if (!yaRoboEsteTurno) {
-            JOptionPane.showMessageDialog(this,
-                "Debes robar tu carta primero (Fase de Robo).",
-                "Acción no disponible", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // segun el tipo de carta, diferente accion
-        if (carta instanceof Monstruo) {
-            accionInvocarMonstruo((Monstruo) carta, actual);
-        } else if (carta instanceof CartaMagica) {
-            accionActivarMagia((CartaMagica) carta, actual, enemigo);
-        } else if (carta instanceof CartaTrampa) {
-            accionColocarTrampa((CartaTrampa) carta, actual);
-        }
-
-        actualizarTodaLaUI();
-        verificarFinDelJuego();
-    }
-
-    private void accionInvocarMonstruo(Monstruo monstruo, Jugador actual) {
-        registrarEnLog("");
-        registrarEnLog("[ Invocación: " + monstruo.getNombre() + " ]");
-
-        if (monstruo.necesitaSacrificio()) {
-            // necesita sacrificio — mostrar campo
-            if (actual.getCampo().isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                    monstruo.getNombre() + " es Nivel " + monstruo.getNivel() + " y necesita un sacrificio.\n"
-                    + "¡No tienes monstruos en campo para sacrificar!",
-                    "Sacrificio requerido", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            // dialogo para elegir el sacrificio
-            String[] opcionesCampo = new String[actual.getCampo().size()];
-            for (int i = 0; i < actual.getCampo().size(); i++) {
-                Monstruo m = actual.getCampo().get(i);
-                opcionesCampo[i] = m.getNombre() + " (ATK:" + m.getAtk() + " / DEF:" + m.getDef() + ")";
-            }
-
-            String seleccionadoStr = (String) JOptionPane.showInputDialog(
-                this,
-                monstruo.getNombre() + " es Nivel " + monstruo.getNivel() + ".\n"
-                    + "Selecciona el monstruo a SACRIFICAR:",
-                "Sacrificio necesario",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opcionesCampo,
-                opcionesCampo[0]);
-
-            if (seleccionadoStr == null) {
-                registrarEnLog("  → Invocación cancelada.");
-                return;
-            }
-
-            int indSacrificio = -1;
-            for (int i = 0; i < opcionesCampo.length; i++) {
-                if (opcionesCampo[i].equals(seleccionadoStr)) {
-                    indSacrificio = i;
-                    break;
-                }
-            }
-
-            if (indSacrificio < 0) return;
-
-            Monstruo sacrificio = actual.getCampo().get(indSacrificio);
-            boolean exito = actual.invocarMonstruo(monstruo, sacrificio);
-
-            if (exito) {
-                registrarEnLog("   " + sacrificio.getNombre() + " fue sacrificado.");
-                registrarEnLog("   ¡" + monstruo.getNombre() + " invocado!");
-                registrarEnLog("    ATK:" + monstruo.getAtk() + " / DEF:" + monstruo.getDef()
-                    + " / Nivel:" + monstruo.getNivel());
-            }
-        } else {
-            // invocacion normal sin sacrificio
-            boolean exito = actual.invocarMonstruo(monstruo);
-            if (exito) {
-                registrarEnLog("   ¡" + monstruo.getNombre() + " invocado al campo!");
-                registrarEnLog("    ATK:" + monstruo.getAtk() + " / DEF:" + monstruo.getDef());
-            }
-        }
-    }
-
-    private void accionActivarMagia(CartaMagica carta, Jugador actual, Jugador enemigo) {
-        registrarEnLog("");
-        registrarEnLog("[ Carta Mágica: " + carta.getNombre() + " ]");
-        registrarEnLog("  Efecto: " + carta.getDescripcion());
-
-        Contexto ctx = new Contexto(actual, enemigo);
-        ctx.setJuego(juegoActual);
-
-        // si necesita monstruo propio
-        if (carta.necesitaMonstruoPropio()) {
-            if (actual.getCampo().isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                    "Esta magia necesita un monstruo propio en campo.",
-                    "Campo vacío", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            String[] opciones = new String[actual.getCampo().size()];
-            for (int i = 0; i < actual.getCampo().size(); i++) {
-                Monstruo m = actual.getCampo().get(i);
-                opciones[i] = m.getNombre() + " (ATK:" + m.getAtk() + ")";
-            }
-
-            String elegido = (String) JOptionPane.showInputDialog(
-                this, "Elige tu monstruo objetivo:",
-                carta.getNombre(), JOptionPane.QUESTION_MESSAGE,
-                null, opciones, opciones[0]);
-
-            if (elegido == null) { registrarEnLog("  -> Cancelado."); return; }
-
-            for (int i = 0; i < opciones.length; i++) {
-                if (opciones[i].equals(elegido)) {
-                    ctx.setMonstruoPropio(actual.getCampo().get(i));
-                    break;
-                }
-            }
-        }
-
-        // si necesita monstruo enemigo
-        if (carta.necesitaMonstruoEnemigo()) {
-            if (enemigo.getCampo().isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                    "Esta magia necesita un monstruo enemigo en campo.",
-                    "Campo vacío", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            String[] opcionesEnemigo = new String[enemigo.getCampo().size()];
-            for (int i = 0; i < enemigo.getCampo().size(); i++) {
-                Monstruo m = enemigo.getCampo().get(i);
-                opcionesEnemigo[i] = m.getNombre() + " (ATK:" + m.getAtk() + ")";
-            }
-
-            String elegidoEnemigo = (String) JOptionPane.showInputDialog(
-                this, "Elige el monstruo enemigo objetivo:",
-                carta.getNombre(), JOptionPane.QUESTION_MESSAGE,
-                null, opcionesEnemigo, opcionesEnemigo[0]);
-
-            if (elegidoEnemigo == null) { registrarEnLog("  → Cancelado."); return; }
-
-            for (int i = 0; i < opcionesEnemigo.length; i++) {
-                if (opcionesEnemigo[i].equals(elegidoEnemigo)) {
-                    ctx.setMonstruoEnemigo(enemigo.getCampo().get(i));
-                    break;
-                }
-            }
-        }
-
-        boolean exito = actual.jugarMagia(carta);
-        if (exito) {
-            carta.activar(ctx);
-            registrarEnLog("   ¡Magia activada!");
-        }
-    }
-
-    private void accionColocarTrampa(CartaTrampa trampa, Jugador actual) {
-        registrarEnLog("");
-        registrarEnLog("[ Colocar Trampa: ??? ]");
-
-        boolean exito = actual.colocarTrampa(trampa);
-        if (exito) {
-            registrarEnLog("   Trampa colocada boca abajo.");
-            registrarEnLog("  (El oponente no sabe qué es)");
-        }
-    }
-
-    private void mostrarMenuAtaque() {
-        Jugador actual = juegoActual.getJugadorActual();
-        Jugador enemigo = juegoActual.getJugadorEnemigo();
-
-        if (!yaRoboEsteTurno) {
-            JOptionPane.showMessageDialog(this, "Primero debes robar tu carta.", "Acción", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        if (juegoActual.esPrimerTurno()) {
-            JOptionPane.showMessageDialog(this,
-                "¡En el primer turno no se puede atacar!\n(Sería injusto para quien empezó último.)",
-                "Sin ataque", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        if (actual.getCampo().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No tienes monstruos en campo para atacar.",
-                "Sin monstruos", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        ArrayList<Monstruo> atacantesDisponibles = new ArrayList<>();
-        for (Monstruo m : actual.getCampo()) {
-            if (m.puedeAtacar()) atacantesDisponibles.add(m);
-        }
-
-        if (atacantesDisponibles.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                "Todos tus monstruos ya atacaron este turno.",
-                "Sin atacantes", JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-
-        String[] opcionesAtacante = new String[atacantesDisponibles.size()];
-        for (int i = 0; i < atacantesDisponibles.size(); i++) {
-            Monstruo m = atacantesDisponibles.get(i);
-            opcionesAtacante[i] = m.getNombre() + "  (ATK:" + m.getAtk() + " / Niv:" + m.getNivel() + ")";
-        }
-
-        String elegidoAtacante = (String) JOptionPane.showInputDialog(
-            this,
-            "Selecciona tu monstruo atacante:",
-            " Declarar Ataque",
-            JOptionPane.QUESTION_MESSAGE,
-            null,
-            opcionesAtacante,
-            opcionesAtacante[0]);
-
-        if (elegidoAtacante == null) return;
-
-        Monstruo atacante = null;
-        for (int i = 0; i < opcionesAtacante.length; i++) {
-            if (opcionesAtacante[i].equals(elegidoAtacante)) {
-                atacante = atacantesDisponibles.get(i);
-                break;
-            }
-        }
-        if (atacante == null) return;
-
-        registrarEnLog("");
-        registrarEnLog("[ Fase de Batalla ]");
-        registrarEnLog("  " + actual.getNombre() + " ataca con: " + atacante.getNombre());
-
-        Contexto ctxTrampa = null;
-        if (enemigo.tieneTrampas()) {
-
-            ctxTrampa = procesarTrampasEnemigas(enemigo, actual, atacante);
-        }
-
-        if (ctxTrampa != null && ctxTrampa.isAtaqueAnulado()) {
-            registrarEnLog("   ¡El ataque fue CANCELADO por una trampa!");
-            atacante.marcarComoAtacado();
-            actualizarTodaLaUI();
-            verificarFinDelJuego();
-            return;
-        }
-
-        // el atacante sigue vivo?
-        if (!actual.getCampo().contains(atacante)) {
-            registrarEnLog("   El monstruo atacante fue destruido por una trampa.");
-            actualizarTodaLaUI();
-            verificarFinDelJuego();
-            return;
-        }
-
-        Monstruo defensor = null;
-        if (!enemigo.getCampo().isEmpty()) {
-            String[] opcionesDefensor = new String[enemigo.getCampo().size()];
-            for (int i = 0; i < enemigo.getCampo().size(); i++) {
-                Monstruo m = enemigo.getCampo().get(i);
-                String posicion = m.isEnPosicionAtaque() ? "ATQ:" + m.getAtk() : "DEF:" + m.getDef();
-                opcionesDefensor[i] = m.getNombre() + "  (" + posicion + " / Niv:" + m.getNivel() + ")";
-            }
-
-            String elegidoDefensor = (String) JOptionPane.showInputDialog(
-                this,
-                "Selecciona el monstruo a atacar:",
-                " Elegir objetivo",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opcionesDefensor,
-                opcionesDefensor[0]);
-
-            if (elegidoDefensor == null) return;
-
-            for (int i = 0; i < opcionesDefensor.length; i++) {
-                if (opcionesDefensor[i].equals(elegidoDefensor)) {
-                    defensor = enemigo.getCampo().get(i);
-                    break;
-                }
-            }
-        } else {
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "El oponente no tiene monstruos. ¿Atacas directamente?\n"
-                + attackante(atacante),
-                "¡Ataque Directo!",
-                JOptionPane.YES_NO_OPTION);
-            if (confirm != JOptionPane.YES_OPTION) return;
-
-            registrarEnLog("   ¡ATAQUE DIRECTO! → " + atacante.getAtk() + " daño a " + enemigo.getNombre());
-        }
-
-        int lpEnemigoAntes = enemigo.getVida();
-        int lpPropioAntes  = actual.getVida();
-
-        actual.atacarConMonstruo(atacante, enemigo, defensor);
-
-        // reportar el resultado en el log
-        if (enemigo.getVida() < lpEnemigoAntes) {
-            int danoRecibido = lpEnemigoAntes - enemigo.getVida();
-            registrarEnLog("  → " + enemigo.getNombre() + " pierde " + danoRecibido + " LP");
-            registrarEnLog("    LP restantes: " + enemigo.getVida());
-        }
-        if (actual.getVida() < lpPropioAntes) {
-            int danoRecibido = lpPropioAntes - actual.getVida();
-            registrarEnLog("  → " + actual.getNombre() + " pierde " + danoRecibido + " LP (daño de rebote)");
-        }
-
-        actualizarTodaLaUI();
-        verificarFinDelJuego();
-    }
-
-    private Contexto procesarTrampasEnemigas(Jugador duenioTrampa, Jugador atacante, Monstruo monstruoAtacante) {
-        ArrayList<CartaTrampa> trampasDisponibles = new ArrayList<>();
-        for (CartaTrampa t : duenioTrampa.getTrampas()) {
-            if (!t.fueActivada()) trampasDisponibles.add(t);
-        }
-
-        if (trampasDisponibles.isEmpty()) return null;
-
-        String[] opcionesTrampas = new String[trampasDisponibles.size() + 1];
-        opcionesTrampas[0] = "No activar ninguna";
-        for (int i = 0; i < trampasDisponibles.size(); i++) {
-            opcionesTrampas[i + 1] = trampasDisponibles.get(i).getNombre()
-                + " — " + trampasDisponibles.get(i).getDescripcion();
-        }
-
-        JOptionPane.showMessageDialog(this,
-            " Es el momento de " + duenioTrampa.getNombre() + " para activar trampas.",
-            "Fase de Trampas", JOptionPane.INFORMATION_MESSAGE);
-
-        String elegida = (String) JOptionPane.showInputDialog(
-            this,
-            duenioTrampa.getNombre() + " tiene " + trampasDisponibles.size() + " trampa(s) disponible(s).\n"
-                + "¿Deseas activar alguna?",
-            "¡¡ TRAMPA !!",
-            JOptionPane.WARNING_MESSAGE,
-            null,
-            opcionesTrampas,
-            opcionesTrampas[0]);
-
-        if (elegida == null || elegida.equals(opcionesTrampas[0])) return null;
-
-        CartaTrampa trampaElegida = null;
-        for (int i = 0; i < trampasDisponibles.size(); i++) {
-            if (opcionesTrampas[i + 1].equals(elegida)) {
-                trampaElegida = trampasDisponibles.get(i);
-                break;
-            }
-        }
-
-        if (trampaElegida == null) return null;
-
-        Contexto ctx = new Contexto(duenioTrampa, atacante, null, monstruoAtacante);
-        ctx.setJuego(juegoActual);
-        trampaElegida.activar(ctx);
-
-        // sacar la trampa del campo y mandarla al cementerio
-        duenioTrampa.getTrampas().remove(trampaElegida);
-        duenioTrampa.agregarAlCementerio(trampaElegida);
-
-        registrarEnLog("   ¡TRAMPA ACTIVADA! -> " + trampaElegida.getNombre());
-        registrarEnLog("    " + trampaElegida.getDescripcion());
-
-        return ctx;
-    }
-
-    private String attackante(Monstruo m) {
-        return m.getNombre() + " · ATK: " + m.getAtk();
-    }
-
-    private void mostrarCementerio() {
-        Jugador actual = juegoActual.getJugadorActual();
-        Jugador enemigo = juegoActual.getJugadorEnemigo();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("=== Cementerio de ").append(actual.getNombre()).append(" ===\n");
-        if (actual.getCementerio().isEmpty()) {
-            sb.append("  (vacío)\n");
-        } else {
-            for (Carta c : actual.getCementerio()) {
-                sb.append("  · ").append(c.getNombre()).append(" [").append(c.getTipo()).append("]\n");
-            }
-        }
-
-        sb.append("\n=== Cementerio de ").append(enemigo.getNombre()).append(" ===\n");
-        if (enemigo.getCementerio().isEmpty()) {
-            sb.append("  (vacío)\n");
-        } else {
-            for (Carta c : enemigo.getCementerio()) {
-                sb.append("  · ").append(c.getNombre()).append(" [").append(c.getTipo()).append("]\n");
-            }
-        }
-
-        JTextArea areaTexto = new JTextArea(sb.toString());
-        areaTexto.setEditable(false);
-        areaTexto.setBackground(COLOR_LOG_FONDO);
-        areaTexto.setForeground(COLOR_TEXTO);
-        areaTexto.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        JScrollPane scroll = new JScrollPane(areaTexto);
-        scroll.setPreferredSize(new Dimension(350, 250));
-
-        JOptionPane.showMessageDialog(this, scroll, " Cementerio", JOptionPane.PLAIN_MESSAGE);
-    }
-
-    private void accionTerminarTurno() {
-        if (!yaRoboEsteTurno) {
-            int confirmar = JOptionPane.showConfirmDialog(this,
-                "¡No has robado tu carta este turno!\n¿Seguro que quieres terminar el turno?",
-                "Confirmar", JOptionPane.YES_NO_OPTION);
-            if (confirmar != JOptionPane.YES_OPTION) return;
-        }
-
-        registrarEnLog("");
-        registrarEnLog("[ Fase Final — " + juegoActual.getJugadorActual().getNombre() + " ]");
-        registrarEnLog("  Turno terminado.");
-        registrarEnLog("────────────────────────────────────────");
-
-        juegoActual.faseFinal();// esto cambia el turno internamente
-        yaRoboEsteTurno = false;// reset para el nuevo turno
-
-        botonRobarCarta.setEnabled(true);
-        labelFase.setText("[Inicio del Turno]");
-
-        String nombreNuevo = juegoActual.getJugadorActual().getNombre();
-        registrarEnLog("");
-        registrarEnLog("   Ahora es el turno de: " + nombreNuevo);
-        registrarEnLog("  → Presiona 'Robar Carta' para continuar.");
-
-        actualizarTodaLaUI();
-
-        JOptionPane.showMessageDialog(this,
-            "¡Fin del turno!\n\nAhora le toca a: " + nombreNuevo,
-            "Cambio de Turno", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void actualizarTodaLaUI() {
-        actualizarPanelLP();
-        actualizarCampoOponente();
-        actualizarCampoJugador();
-        actualizarManoJugador();
-        labelTurnoActual.setText("TURNO: " + juegoActual.getJugadorActual().getNombre().toUpperCase());
-    }
-
     private void actualizarPanelLP() {
-        // jugador 1
         labelNombreJ1.setText(jugador1.getNombre());
         labelLpJ1.setText("LP: " + jugador1.getVida());
-        labelLpJ1.setForeground(getColorLP(jugador1.getVida()));
-        labelMazoJ1.setText("  Mazo: " + jugador1.getCartasMazo());
+        labelLpJ1.setForeground(colorLP(jugador1.getVida()));
+        labelMazoJ1.setText(" Mazo: " + jugador1.getCartasMazo());
 
-        // jugador 2
         labelNombreJ2.setText(jugador2.getNombre());
         labelLpJ2.setText("LP: " + jugador2.getVida());
-        labelLpJ2.setForeground(getColorLP(jugador2.getVida()));
+        labelLpJ2.setForeground(colorLP(jugador2.getVida()));
         labelMazoJ2.setText("Mazo: " + jugador2.getCartasMazo() + "  ");
     }
 
-    private Color getColorLP(int lp) {
-        if (lp > 4000) return COLOR_LP_NORMAL;
-        if (lp > 2000) return COLOR_LP_MEDIO;
-        return COLOR_LP_BAJO;
-    }
-
     private void actualizarCampoOponente() {
-        Jugador enemigo = juegoActual.getJugadorEnemigo();
+        Jugador enemigo = juego.getJugadorEnemigo();
         panelCampoOponente.removeAll();
 
         if (enemigo.getCampo().isEmpty()) {
-            JLabel vacio = new JLabel("(Campo vacío)");
-            vacio.setForeground(new Color(100, 60, 60));
-            vacio.setFont(new Font("Arial", Font.ITALIC, 12));
-            panelCampoOponente.add(vacio);
+            panelCampoOponente.add(placeholderLabel("(Campo vacío)", new Color(100, 60, 60)));
         } else {
             for (Monstruo m : enemigo.getCampo()) {
-                JButton btnCarta = crearBotonCartaMonstruo(m, false);
-                // los monstruos del oponente son clickeables para ver info
-                btnCarta.addActionListener(e -> mostrarInfoMonstruo(m));
-                panelCampoOponente.add(btnCarta);
+                JButton btn = cartaMonstruoBtn(m, false);
+                btn.addActionListener(e -> infoMonstruo(m));
+                panelCampoOponente.add(btn);
             }
         }
-
-        labelTrampasOponente.setText("  Trampas ocultas: " + enemigo.getTrampas().size() + "  ");
-
+        labelTrampasOponente.setText("Trampas ocultas: " + enemigo.getTrampas().size() + "  ");
         panelCampoOponente.revalidate();
         panelCampoOponente.repaint();
     }
 
     private void actualizarCampoJugador() {
-        Jugador actual = juegoActual.getJugadorActual();
+        Jugador actual = juego.getJugadorActual();
         panelCampoJugador.removeAll();
 
         if (actual.getCampo().isEmpty()) {
-            JLabel vacio = new JLabel("(Campo vacío)");
-            vacio.setForeground(new Color(60, 100, 60));
-            vacio.setFont(new Font("Arial", Font.ITALIC, 12));
-            panelCampoJugador.add(vacio);
+            panelCampoJugador.add(placeholderLabel("(Campo vacío)", new Color(60, 100, 60)));
         } else {
             for (Monstruo m : actual.getCampo()) {
-                JButton btnCarta = crearBotonCartaMonstruo(m, true);
-                btnCarta.addActionListener(e -> mostrarInfoMonstruo(m));
-                panelCampoJugador.add(btnCarta);
+                JButton btn = cartaMonstruoBtn(m, true);
+                btn.addActionListener(e -> infoMonstruo(m));
+                panelCampoJugador.add(btn);
             }
         }
-
         panelCampoJugador.revalidate();
         panelCampoJugador.repaint();
     }
 
     private void actualizarManoJugador() {
-        Jugador actual = juegoActual.getJugadorActual();
+        Jugador actual = juego.getJugadorActual();
         panelManoJugador.removeAll();
 
         if (actual.getMano().isEmpty()) {
-            JLabel vacio = new JLabel("(Sin cartas en mano)");
-            vacio.setForeground(new Color(100, 100, 100));
-            vacio.setFont(new Font("Arial", Font.ITALIC, 11));
-            panelManoJugador.add(vacio);
+            panelManoJugador.add(placeholderLabel("(Sin cartas en mano)", new Color(100, 100, 100)));
         } else {
             for (Carta c : actual.getMano()) {
-                JButton btnCartaMano = crearBotonCartaMano(c);
-                // copia de la referencia para el lambda
-                Carta cartaRef = c;
-                btnCartaMano.addActionListener(e -> accionJugarCartaDeMano(cartaRef));
-                panelManoJugador.add(btnCartaMano);
+                JButton btn = cartaManoBtn(c);
+                Carta ref = c;
+                btn.addActionListener(e -> accionJugarCartaDeMano(ref));
+                panelManoJugador.add(btn);
             }
         }
-
         panelManoJugador.revalidate();
         panelManoJugador.repaint();
     }
 
+    private JButton cartaMonstruoBtn(Monstruo m, boolean esMio) {
+        String pos     = m.isEnPosicionAtaque() ? "ATQ" : "DEF";
+        String yaAtaco = (esMio && !m.puedeAtacar()) ? "<br><font color='#FF6666'>ya atacó</font>" : "";
+        String html    = "<html><center><b>" + m.getNombre() + "</b><br>"
+                + "Lv." + m.getNivel() + " [" + pos + "]<br>"
+                + "ATK:" + m.getAtk() + " DEF:" + m.getDef() + yaAtaco
+                + "</center></html>";
 
-
-    // crea un boton para una carta de monstruo en el campo
-    private JButton crearBotonCartaMonstruo(Monstruo m, boolean esMio) {
-        String modo = m.isEnPosicionAtaque() ? "ATQ" : "DEF";
-        String yaAtaco = (!esMio || m.puedeAtacar()) ? "" : "\n[ya atacó]";
-
-        String textoBoton = "<html><center><b>" + m.getNombre() + "</b><br>"
-            + "Lv." + m.getNivel() + " [" + modo + "]<br>"
-            + "ATK:" + m.getAtk() + " DEF:" + m.getDef()
-            + (yaAtaco.isEmpty() ? "" : "<br><font color='#FF6666'>ya atacó</font>")
-            + "</center></html>";
-
-        JButton btn = new JButton(textoBoton);
+        JButton btn = new JButton(html);
         btn.setPreferredSize(new Dimension(110, 90));
         btn.setFont(new Font("Arial", Font.PLAIN, 10));
         btn.setForeground(COLOR_TEXTO);
@@ -908,163 +517,117 @@ public class VentanaDuelo extends JFrame {
         if (esMio && !m.puedeAtacar()) {
             btn.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80), 1));
             btn.setBackground(new Color(15, 25, 50));
-        } else if (esMio) {
-            btn.setBorder(BorderFactory.createLineBorder(COLOR_LP_NORMAL, 2));
         } else {
-            btn.setBorder(BorderFactory.createLineBorder(new Color(180, 60, 60), 2));
+            Color borde = esMio ? COLOR_LP_NORMAL : new Color(180, 60, 60);
+            btn.setBorder(BorderFactory.createLineBorder(borde, 2));
         }
-
         return btn;
     }
 
-    private JButton crearBotonCartaMano(Carta c) {
-        Color colorFondo;
-        String infoExtra = "";
-
+    private JButton cartaManoBtn(Carta c) {
+        Color fondo;
+        String info;
         if (c instanceof Monstruo) {
             Monstruo m = (Monstruo) c;
-            colorFondo = COLOR_CARTA_MONSTRUO;
-            infoExtra = "ATK:" + m.getAtk() + " DEF:" + m.getDef() + " Lv." + m.getNivel();
-            if (m.necesitaSacrificio()) infoExtra += " SACR";
+            fondo = COLOR_CARTA_MONSTRUO;
+            info  = "ATK:" + m.getAtk() + " DEF:" + m.getDef()
+                    + " Lv." + m.getNivel()
+                    + (m.necesitaSacrificio() ? " SACR" : "");
         } else if (c instanceof CartaMagica) {
-            colorFondo = COLOR_CARTA_MAGIA;
-            infoExtra = "Efecto mágico";
+            fondo = COLOR_CARTA_MAGIA;
+            info  = "Efecto mágico";
         } else {
-            colorFondo = COLOR_CARTA_TRAMPA;
-            infoExtra = "Trampa";
+            fondo = COLOR_CARTA_TRAMPA;
+            info  = "Trampa";
         }
 
-        String textoBoton = "<html><center><b>" + c.getNombre() + "</b><br>"
-            + "<font size='2'>[" + c.getTipo() + "]<br>" + infoExtra + "</font>"
-            + "</center></html>";
+        String html = "<html><center><b>" + c.getNombre() + "</b><br>"
+                + "<font size='2'>[" + c.getTipo() + "]<br>" + info + "</font>"
+                + "</center></html>";
 
-        JButton btn = new JButton(textoBoton);
+        JButton btn = new JButton(html);
         btn.setPreferredSize(new Dimension(100, 85));
         btn.setFont(new Font("Arial", Font.PLAIN, 10));
         btn.setForeground(COLOR_TEXTO);
-        btn.setBackground(colorFondo);
+        btn.setBackground(fondo);
         btn.setBorder(BorderFactory.createLineBorder(COLOR_BORDE, 2));
         btn.setFocusPainted(false);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btn.setToolTipText("<html><b>" + c.getNombre() + "</b><br>" + c.getDescripcion() + "</html>");
 
-        // hover effect
+        Color original = fondo;
         btn.addMouseListener(new MouseAdapter() {
-            Color original = colorFondo;
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                btn.setBackground(colorFondo.brighter());
+            @Override public void mouseEntered(MouseEvent e) {
+                btn.setBackground(fondo.brighter());
                 btn.setBorder(BorderFactory.createLineBorder(COLOR_DORADO, 2));
             }
-            @Override
-            public void mouseExited(MouseEvent e) {
+            @Override public void mouseExited(MouseEvent e) {
                 btn.setBackground(original);
                 btn.setBorder(BorderFactory.createLineBorder(COLOR_BORDE, 2));
             }
         });
-
         return btn;
     }
 
-    private void mostrarInfoMonstruo(Monstruo m) {
-        String info = "Nombre:   " + m.getNombre() + "\n"
-            + "Nivel:    " + m.getNivel() + "\n"
-            + "ATK:      " + m.getAtk() + (m.getAtk() != m.getAtkBase() ? " (base:" + m.getAtkBase() + ")" : "") + "\n"
-            + "DEF:      " + m.getDef() + (m.getDef() != m.getDefBase() ? " (base:" + m.getDefBase() + ")" : "") + "\n"
-            + "Posición: " + (m.isEnPosicionAtaque() ? "ATAQUE" : "DEFENSA") + "\n"
-            + "Descripción: " + m.getDescripcion();
+    private void registrarEnLog(String msg) {
+        areaLog.append(msg + "\n");
+        areaLog.setCaretPosition(areaLog.getDocument().getLength());
+    }
 
+    private void infoMonstruo(Monstruo m) {
+        String info = "Nombre:  " + m.getNombre() + "\n"
+                + "Nivel:  " + m.getNivel() + "\n"
+                + "ATK:  " + m.getAtk()
+                + (m.getAtk() != m.getAtkBase() ? " (base:" + m.getAtkBase() + ")" : "") + "\n"
+                + "DEF:  " + m.getDef()
+                + (m.getDef() != m.getDefBase() ? " (base:" + m.getDefBase() + ")" : "") + "\n"
+                + "Posición:   " + (m.isEnPosicionAtaque() ? "ATAQUE" : "DEFENSA") + "\n"
+                + "Descripción:   " + m.getDescripcion();
         JOptionPane.showMessageDialog(this, info, "Info: " + m.getNombre(), JOptionPane.INFORMATION_MESSAGE);
     }
 
-
-
-    private void verificarFinDelJuego() {
-        if (!juegoActual.hayGanador()) return;
-
-        String ganador = juegoActual.getNombreGanador();
-        Jugador jugGanador = juegoActual.getGanador();
-        Jugador jugPerdedor = jugGanador == jugador1 ? jugador2 : jugador1;
-
-        registrarEnLog("");
-        registrarEnLog("════════════════════════════════════════");
-        registrarEnLog("   FIN DEL DUELO ");
-        registrarEnLog("  ¡¡ " + ganador + " GANA EL DUELO !!");
-        registrarEnLog("  LP finales: " + jugGanador.getNombre() + " → " + jugGanador.getVida());
-        registrarEnLog("  LP finales: " + jugPerdedor.getNombre() + " → " + jugPerdedor.getVida());
-        registrarEnLog("════════════════════════════════════════");
-
-        botonRobarCarta.setEnabled(false);
-        botonTerminarTurno.setEnabled(false);
-
-        String mensajeFinal =
-            "  FIN DEL DUELO  \n\n"
-            + "¡¡ " + ganador.toUpperCase() + " GANA EL DUELO !!\n\n"
-            + jugGanador.getNombre() + " termina con " + jugGanador.getVida() + " LP\n"
-            + jugPerdedor.getNombre() + " termina con " + jugPerdedor.getVida() + " LP\n\n"
-            + "\"Confía en el corazón de las cartas.\"\n— Yugi Muto";
-
-        JOptionPane.showMessageDialog(
-            this,
-            mensajeFinal,
-            "¡Duelo Terminado!",
-            JOptionPane.INFORMATION_MESSAGE);
-
-        int respuesta = JOptionPane.showConfirmDialog(
-            this,
-            "¿Quieres iniciar un nuevo duelo?",
-            "Nuevo Duelo",
-            JOptionPane.YES_NO_OPTION);
-
-        if (respuesta == JOptionPane.YES_OPTION) {
-            this.dispose();
-            PantallaInicio nuevaInicio = new PantallaInicio();
-            nuevaInicio.setVisible(true);
-        } else {
-            System.exit(0);
-        }
+    private Color colorLP(int lp) {
+        if (lp > 4000) return COLOR_LP_NORMAL;
+        if (lp > 2000) return COLOR_LP_MEDIO;
+        return COLOR_LP_BAJO;
     }
 
+    private JLabel makeLabel(String texto, int estilo, int tam, Color color) {
+        JLabel l = new JLabel(texto);
+        l.setFont(new Font("Arial", estilo, tam));
+        l.setForeground(color);
+        return l;
+    }
 
-    private JButton crearBotonAccion(String texto, Color colorFondo) {
+    private JLabel placeholderLabel(String texto, Color color) {
+        JLabel l = new JLabel(texto);
+        l.setForeground(color);
+        l.setFont(new Font("Arial", Font.ITALIC, 12));
+        return l;
+    }
+
+    private JButton botonAccion(String texto, Color fondo) {
         JButton btn = new JButton(texto);
         btn.setFont(new Font("Arial", Font.BOLD, 12));
         btn.setForeground(COLOR_TEXTO);
-        btn.setBackground(colorFondo);
+        btn.setBackground(fondo);
         btn.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(COLOR_BORDE, 1),
-            BorderFactory.createEmptyBorder(6, 8, 6, 8)
-        ));
+                BorderFactory.createLineBorder(COLOR_BORDE, 1),
+                BorderFactory.createEmptyBorder(6, 8, 6, 8)));
         btn.setFocusPainted(false);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                btn.setBackground(colorFondo.brighter());
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                btn.setBackground(colorFondo);
-            }
+            @Override public void mouseEntered(MouseEvent e) { btn.setBackground(fondo.brighter()); }
+            @Override public void mouseExited(MouseEvent e)  { btn.setBackground(fondo); }
         });
         return btn;
     }
 
-    private TitledBorder crearBordeTitulado(String titulo, Color colorTitulo) {
-        TitledBorder borde = BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(colorTitulo, 1),
-            titulo,
-            TitledBorder.LEFT,
-            TitledBorder.TOP,
-            new Font("Arial", Font.BOLD, 11),
-            colorTitulo
-        );
-        return borde;
-    }
-
-    public void registrarEnLog(String mensaje) {
-        areaLog.append(mensaje + "\n");
-        // scroll automatico al fondo
-        areaLog.setCaretPosition(areaLog.getDocument().getLength());
+    private TitledBorder titledBorder(String titulo, Color color) {
+        return BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(color, 1),
+                titulo,
+                TitledBorder.LEFT, TitledBorder.TOP,
+                new Font("Arial", Font.BOLD, 11), color);
     }
 }

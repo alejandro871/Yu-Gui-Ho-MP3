@@ -1,4 +1,5 @@
 import juego.Juego;
+import CONTROLADOR.controladorJuego;
 import jugadores.Jugador;
 import jugadores.Mazo;
 import VISTA.vistaConsola;
