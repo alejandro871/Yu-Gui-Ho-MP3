@@ -20,4 +20,10 @@ public class caretakerPartida {
 
         return historial.pop();
     }
+
+    public int cantidadMementos() {
+
+        return historial.size();
+    }
+    
 }
