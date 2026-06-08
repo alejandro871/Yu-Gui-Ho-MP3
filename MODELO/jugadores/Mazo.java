@@ -185,4 +185,18 @@ public class Mazo {
                 + " y 25 para " + j2.getNombre()
                 + ". Cada uno tiene 5 en mano y 20 en mazo.");
     }
+
+    public static Carta buscarCartaPorNombre(String nombre) {
+
+    ArrayList<Carta> cartas = crearMazo();
+
+    for (Carta carta : cartas) {
+
+        if (carta.getNombre().equalsIgnoreCase(nombre)) {
+            return carta;
+        }
+    }
+
+    return null;
+}
 }

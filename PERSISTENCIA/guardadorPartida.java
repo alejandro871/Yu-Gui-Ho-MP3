@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import cartas.Carta;
 import cartas.Monstruo;
+import PERSISTENCIA.historialGuardados;
 
 
 public class guardadorPartida {
@@ -40,6 +41,7 @@ public class guardadorPartida {
         writer.newLine();
         writer.write("cementerio=" + cartasAString(j1.getCementerio()));
         writer.newLine();   
+        writer.write("trampas=" + cartasAString(j1.getTrampas()));
         writer.newLine();  
 
         writer.write("[JUGADOR2]");
@@ -54,10 +56,13 @@ public class guardadorPartida {
         writer.newLine();
         writer.write("cementerio=" + cartasAString(j2.getCementerio()));
         writer.newLine();
+        writer.write("trampas=" + cartasAString(j2.getTrampas()));
+        writer.newLine();
 
         writer.close();
 
         System.out.println("Partida guardada correctamente.");
+        historialGuardados.registrarGuardado();
 
     } catch (IOException e) {
 
@@ -66,7 +71,7 @@ public class guardadorPartida {
     }
 }
 
-private static String cartasAString(java.util.List<Carta> cartas) {
+private static String cartasAString( java.util.List<? extends Carta> cartas) {
 
     StringBuilder sb = new StringBuilder();
 
@@ -81,7 +86,6 @@ private static String cartasAString(java.util.List<Carta> cartas) {
 
     return sb.toString();
 }
-
 private static String monstruosAString(java.util.List<Monstruo> monstruos) {
 
     StringBuilder sb = new StringBuilder();
