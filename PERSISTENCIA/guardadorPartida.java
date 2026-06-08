@@ -27,6 +27,8 @@ public class guardadorPartida {
         writer.newLine();
         writer.write("turno=" + juego.getJugadorActual().getNombre());
         writer.newLine();
+        writer.write("turnosJugados=" + juego.getTurnos());
+        writer.newLine();
         writer.write("fechaGuardado=" + LocalDateTime.now());
         writer.newLine();
         writer.newLine();

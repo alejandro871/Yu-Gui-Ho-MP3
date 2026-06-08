@@ -1,6 +1,5 @@
 import juego.Juego;
 import CONTROLADOR.controladorJuego;
-import cartas.Carta;
 import PERSISTENCIA.rankingVictorias;
 import jugadores.Jugador;
 import jugadores.Mazo;

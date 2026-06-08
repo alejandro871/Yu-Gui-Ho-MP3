@@ -1,20 +1,21 @@
 [JUEGO]
-turno=poste
-fechaGuardado=2026-06-08T14:52:18.229926
+turno=wally
+turnosJugados=13
+fechaGuardado=2026-06-08T18:27:01.550023600
 
 [JUGADOR1]
-nombre=anti
-lp=8000
-mano=Principe Oscuro|Furia Nocturna|Titan|Anguila|Escudo de la Victoria
-campo=
-cementerio=
-mazo=Pacto de la Sabiduria|Mago Oscuro|Llamada del Cementerio|Sativa|Rey Esqueleto|Leon|Caballero|Dragon Blanco|Golem|Duende|Gigante|Lagrima del Fénix|Lombriz Sangrienta|Grieta de Poder|Araña Aguja|Tarantula|Espejo de Anulacion|Mago Electrico|Vampiro|Berserker Soul
+nombre=wally
+lp=5700
+mano=Vampiro|Titan|Escudo de la Victoria|Pot of Greed|Orden de Destruccion
+campo=Mesini|Mago Oscuro|Zombie
+cementerio=Caballero|Contraataque Espejo|Mago Electrico|Muro de Defensa
+mazo=Trampa Mortal|Llamada del Cementerio|Veneno Oscuro|Pitbull|Curacion Divina|Ciclope|Duende|Esqueleto|Ladron de Almas|Golem Oscuro|Bestia|Anguila|Caballero Dorado
 trampas=
 [JUGADOR2]
-nombre=poste
-lp=8000
-mano=Rayo Oscuro|Trampa Mortal|Espada de Rafflesia|Giro del Destino|Ladron de Almas
-campo=
-cementerio=
-mazo=Orden de Destruccion|Zombie|Golem Oscuro|Veneno Oscuro|Contraataque Espejo|Bestia|Fortaleza Impenetrable|Caballero Dorado|Piraña|Mesini|Ciclope|Curacion Divina|Principe|Esqueleto|Muro de Defensa|Drenaje de Vida|Pitbull|Guerrero|Pot of Greed|Mago
-trampas=
+nombre=canela
+lp=5300
+mano=Dragon Blanco|Espada de Rafflesia|Grieta de Poder|Mago|Rey Esqueleto
+campo=Lombriz Sangrienta
+cementerio=Drenaje de Vida|Rayo Oscuro|Tarantula|Principe Oscuro
+mazo=Leon|Sativa|Espejo de Anulacion|Furia Nocturna|Guerrero|Fortaleza Impenetrable|Golem|Piraña|Lagrima del Fénix|Berserker Soul|Gigante|Principe|Araña Aguja|Pacto de la Sabiduria
+trampas=Giro del Destino

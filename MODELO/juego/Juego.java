@@ -11,12 +11,10 @@ public class Juego {
 
     private Jugador jugador1;
     private Jugador jugador2;
-
+    private int turnos;
     private Jugador jugadorActual;
     private Jugador jugadorEnemigo;
-
     private boolean primerTurnoPartida;
-
     private ArrayList<EfectoTemporalAtk> efectosTemporalesActivos;
 
     public Juego(Jugador j1, Jugador j2) {
@@ -35,6 +33,7 @@ public class Juego {
         }
 
         this.primerTurnoPartida = true;
+        this.turnos = 1;
 
         System.out.println("El azar ha decidido: " + jugadorActual.getNombre()
                 + " va primero. ¡Que comiece el duelo!");
@@ -85,6 +84,8 @@ public class Juego {
         primerTurnoPartida = false; 
 
         cambiarTurno();
+
+        turnos++;
 
         System.out.println("Turno terminado.");
     }
@@ -163,4 +164,12 @@ public class Juego {
     }
 }
 
+    public int getTurnos() {
+            
+        return turnos;
+    }
+
+    public void setTurnos(int turnos) {
+        this.turnos = turnos;
+    }
 }
