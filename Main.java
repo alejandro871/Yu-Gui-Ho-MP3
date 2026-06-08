@@ -1,5 +1,6 @@
 import juego.Juego;
 import CONTROLADOR.controladorJuego;
+import cartas.Carta;
 import PERSISTENCIA.rankingVictorias;
 import jugadores.Jugador;
 import jugadores.Mazo;
@@ -31,6 +32,7 @@ public class Main {
         System.out.println("║   [4]  Ver Partida Guardada               ║");
         System.out.println("║   [5]  Ver Ranking de Victorias           ║");
         System.out.println("║   [6]  Ver Historial de Guardados         ║");
+        System.out.println("║   [7]  Cargar Partida Guardada            ║");
         System.out.println("╚═══════════════════════════════════════════╝");
         System.out.print("  Opcion: ");
 
@@ -53,12 +55,23 @@ public class Main {
             rankingVictorias.mostrarRanking();
         } else if (modo == 6) {
             historialGuardados.mostrarHistorial();
-        } else {
+        } else if (modo==7) {
+
+             Juego juegoCargado = cargadorPartida.cargarJuego();
+
+                if (juegoCargado != null) {
+
+                    vistaConsola vista = new vistaConsola();
+
+                    controladorJuego controlador = new controladorJuego( juegoCargado, vista);
+
+                    controlador.iniciarBucleConsola();
+                }
+        }else {
             System.out.println("Opcion no valida. Iniciando modo gráfico por defecto...");
             iniciarModoGrafico();
         }
-
-        
+   
     }
 
     private static void iniciarModoConsola(Scanner scanner) {

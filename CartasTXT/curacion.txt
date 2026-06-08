@@ -1,0 +1,4 @@
+nombre=Curacion Divina
+descripcion=Recupera 1500 LP
+clase=efectos.EfectoCuracion
+valor=1500
