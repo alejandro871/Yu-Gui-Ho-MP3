@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import cartas.Carta;
 import cartas.Monstruo;
-import PERSISTENCIA.historialGuardados;
 
 
 public class guardadorPartida {
@@ -41,6 +40,8 @@ public class guardadorPartida {
         writer.newLine();
         writer.write("cementerio=" + cartasAString(j1.getCementerio()));
         writer.newLine();   
+        writer.write("mazo=" + cartasAString(j1.getMazo()));
+        writer.newLine();
         writer.write("trampas=" + cartasAString(j1.getTrampas()));
         writer.newLine();  
 
@@ -55,6 +56,8 @@ public class guardadorPartida {
         writer.write("campo=" + monstruosAString(j2.getCampo()));
         writer.newLine();
         writer.write("cementerio=" + cartasAString(j2.getCementerio()));
+        writer.newLine();
+        writer.write("mazo=" + cartasAString(j2.getMazo()));
         writer.newLine();
         writer.write("trampas=" + cartasAString(j2.getTrampas()));
         writer.newLine();

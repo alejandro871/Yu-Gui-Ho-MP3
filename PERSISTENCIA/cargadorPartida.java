@@ -180,114 +180,30 @@ public class cargadorPartida {
             BufferedReader reader = new BufferedReader( new FileReader("partida.txt"));
 
             String linea;
-
             String nombre = "";
             int lp = 8000;
             String datosMano = "";
             String datosCampo = "";
             String datosCementerio = "";
+            String datosMazo = "";
+            boolean leyendoJugador1 = false;
+            String datosTrampas = "";
 
             while ((linea = reader.readLine()) != null) {
 
-                if (linea.startsWith("nombre=")) {
+                if (linea.equals("[JUGADOR1]")) {
 
-                    nombre = linea.substring(7);
+                    leyendoJugador1 = true;
+                    continue;
                 }
-
-                if (linea.startsWith("lp=")) {
-
-                    lp = Integer.parseInt( linea.substring(3));
-                }
-
-                if (linea.startsWith("mano=")) {
-
-                    datosMano = linea.substring(5);
-                }
-
-                if (linea.startsWith("campo=")) {
-
-                    datosCampo = linea.substring(6);
-
-                if (linea.startsWith("cementerio=")) {
-
-                    datosCementerio = linea.substring(11);
-
-                    Jugador jugador = new Jugador(nombre);
-
-                    jugador.setVida(lp);
-
-                    jugador.getMano().addAll( convertirCartas(datosMano));
-
-                    for (Carta carta : convertirCartas(datosCampo)) {
-
-                        if (carta instanceof Monstruo) {
-
-                            jugador.getCampo().add( (Monstruo) carta);
-                        }
-                    }
-
-                    jugador.getCementerio().addAll(convertirCartas(datosCementerio));
-
-                    reader.close();
-
-                    return jugador;
-                }
-
-                    Jugador jugador = new Jugador(nombre);
-
-                    jugador.setVida(lp);
-
-                    jugador.getMano().addAll(convertirCartas(datosMano));
-
-                    for (Carta carta : convertirCartas(datosCampo)) {
-
-                        if (carta instanceof Monstruo) {
-
-                            jugador.getCampo().add( (Monstruo) carta);
-                        }
-                    }
-
-                    reader.close();
-
-                    return jugador;
-                }
-            }
-
-            reader.close();
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static Jugador cargarJugador2() {
-
-        try {
-
-            BufferedReader reader = new BufferedReader( new FileReader("partida.txt"));
-
-            String linea;
-
-            boolean leyendoJugador2 = false;
-
-            String nombre = "";
-            int lp = 8000;
-            String datosMano = "";
-            String datosCampo = "";
-            String datosCementerio = "";
-
-            while ((linea = reader.readLine()) != null) {
 
                 if (linea.equals("[JUGADOR2]")) {
 
-                    leyendoJugador2 = true;
-                    continue;
+                    break;
                 }
 
-                if (!leyendoJugador2) {
+                if (!leyendoJugador1) {
+
                     continue;
                 }
 
@@ -298,7 +214,8 @@ public class cargadorPartida {
 
                 if (linea.startsWith("lp=")) {
 
-                    lp = Integer.parseInt(linea.substring(3));
+                    lp = Integer.parseInt(
+                            linea.substring(3));
                 }
 
                 if (linea.startsWith("mano=")) {
@@ -314,30 +231,48 @@ public class cargadorPartida {
                 if (linea.startsWith("cementerio=")) {
 
                     datosCementerio = linea.substring(11);
+                }
 
-                    Jugador jugador = new Jugador(nombre);
+                if (linea.startsWith("mazo=")) {
 
-                    jugador.setVida(lp);
+                    datosMazo = linea.substring(5);
+                }
 
-                    jugador.getMano().addAll( convertirCartas(datosMano));
+                if (linea.startsWith("trampas=")) {
 
-                    for (Carta carta : convertirCartas(datosCampo)) {
-
-                        if (carta instanceof Monstruo) {
-
-                            jugador.getCampo().add( (Monstruo) carta);
-                        }
-                    }
-
-                    jugador.getCementerio().addAll( convertirCartas(datosCementerio));
-
-                    reader.close();
-
-                    return jugador;
+                    datosTrampas = linea.substring(8);
                 }
             }
 
             reader.close();
+
+            Jugador jugador = new Jugador(nombre);
+
+            jugador.setVida(lp);
+
+            jugador.getMano().addAll( convertirCartas(datosMano));
+
+            for (Carta carta : convertirCartas(datosCampo)) {
+
+                if (carta instanceof Monstruo) {
+
+                    jugador.getCampo().add( (Monstruo) carta);
+                }
+            }
+
+            jugador.getCementerio().addAll( convertirCartas(datosCementerio));
+
+            jugador.getMazo().addAll( convertirCartas(datosMazo));
+
+            for (Carta carta : convertirCartas(datosTrampas)) {
+
+                if (carta instanceof cartas.CartaTrampa) {
+
+                    jugador.getTrampas().add( (cartas.CartaTrampa) carta);
+                }
+            }
+
+            return jugador;
 
         } catch (Exception e) {
 
@@ -346,6 +281,110 @@ public class cargadorPartida {
 
         return null;
     }
+
+   public static Jugador cargarJugador2() {
+
+    try {
+
+        BufferedReader reader = new BufferedReader( new FileReader("partida.txt"));
+
+        String linea;
+        boolean leyendoJugador2 = false;
+        String nombre = "";
+        int lp = 8000;
+        String datosMano = "";
+        String datosCampo = "";
+        String datosCementerio = "";
+        String datosMazo = "";
+        String datosTrampas = "";
+
+        while ((linea = reader.readLine()) != null) {
+
+            if (linea.equals("[JUGADOR2]")) {
+
+                leyendoJugador2 = true;
+                continue;
+            }
+
+            if (!leyendoJugador2) {
+
+                continue;
+            }
+
+            if (linea.startsWith("nombre=")) {
+
+                nombre = linea.substring(7);
+            }
+
+            if (linea.startsWith("lp=")) {
+
+                lp = Integer.parseInt(linea.substring(3));
+            }
+
+            if (linea.startsWith("mano=")) {
+
+                datosMano = linea.substring(5);
+            }
+
+            if (linea.startsWith("campo=")) {
+
+                datosCampo = linea.substring(6);
+            }
+
+            if (linea.startsWith("cementerio=")) {
+
+                datosCementerio = linea.substring(11);
+            }
+
+            if (linea.startsWith("mazo=")) {
+
+                datosMazo = linea.substring(5);
+            }
+
+            if (linea.startsWith("trampas=")) {
+
+                datosTrampas = linea.substring(8);
+            }
+        }
+
+        reader.close();
+
+        Jugador jugador = new Jugador(nombre);
+
+        jugador.setVida(lp);
+
+        jugador.getMano().addAll( convertirCartas(datosMano));
+
+        for (Carta carta : convertirCartas(datosCampo)) {
+
+            if (carta instanceof Monstruo) {
+
+                jugador.getCampo().add( (Monstruo) carta);
+            }
+        }
+
+        jugador.getCementerio().addAll( convertirCartas(datosCementerio));
+
+        jugador.getMazo().addAll( convertirCartas(datosMazo));
+
+        for (Carta carta : convertirCartas(datosTrampas)) {
+
+            if (carta instanceof cartas.CartaTrampa) {
+
+                jugador.getTrampas().add(
+                        (cartas.CartaTrampa) carta);
+            }
+        }
+
+        return jugador;
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+    }
+
+    return null;
+}
 
     public static Juego cargarJuego() {
 
@@ -360,10 +399,21 @@ public class cargadorPartida {
 
     Juego juego = new Juego(j1, j2);
 
+    String turnoGuardado = cargarTurno();
+
+    if (turnoGuardado.equals(j1.getNombre())) {
+
+        juego.establecerTurno(j1);
+
+    } else if (turnoGuardado.equals(j2.getNombre())) {
+
+        juego.establecerTurno(j2);
+    }
+
     System.out.println("Partida cargada correctamente.");
 
     return juego;
-}
+    }
 
     public static mementoPartida crearMemento() {
 
@@ -379,4 +429,31 @@ public class cargadorPartida {
             return null;
         }
     }
+
+    private static String cargarTurno() {
+
+    try {
+
+        BufferedReader reader = new BufferedReader( new FileReader("partida.txt"));
+
+        String linea;
+
+        while ((linea = reader.readLine()) != null) {
+
+            if (linea.startsWith("turno=")) {
+
+                reader.close();
+                return linea.substring(6);
+            }
+        }
+
+        reader.close();
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+    }
+
+    return "";
+}
 }

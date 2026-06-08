@@ -148,4 +148,19 @@ public class Juego {
     public Jugador getJugador2() {
         return jugador2;
     }
+
+    public void establecerTurno(Jugador jugador) {
+
+    if (jugador == jugador1) {
+
+        jugadorActual = jugador1;
+        jugadorEnemigo = jugador2;
+
+    } else {
+
+        jugadorActual = jugador2;
+        jugadorEnemigo = jugador1;
+    }
+}
+
 }

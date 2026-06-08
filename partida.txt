@@ -1,16 +1,19 @@
 [JUEGO]
-turno=ale
+turno=Sativa
 
 [JUGADOR1]
-nombre=ale
-lp=8000
-mano=Anguila|Rayo Oscuro|Principe Oscuro|Curacion Divina|Mago Oscuro
-campo=
-cementerio=
-
+nombre=Pinky
+lp=4700
+mano=Bestia|Gigante|Golem Oscuro|Lagrima del Fénix|Curacion Divina|Sativa|Mago Electrico
+campo=Caballero Dorado|Rey Esqueleto
+cementerio=Zombie|Lombriz Sangrienta|Mago Oscuro|Golem|Pot of Greed
+mazo=Trampa Mortal|Drenaje de Vida|Giro del Destino|Anguila|Llamada del Cementerio|Mesini|Orden de Destruccion|Escudo de la Victoria|Furia Nocturna|Rayo Oscuro|Ladron de Almas
+trampas=
 [JUGADOR2]
-nombre=da
+nombre=Sativa
 lp=8000
-mano=Veneno Oscuro|Pot of Greed|Duende|Gigante|Mago
-campo=
-cementerio=
+mano=Mago|Veneno Oscuro|Leon|Duende|Caballero
+campo=Titan|Dragon Blanco|Guerrero
+cementerio=Esqueleto|Contraataque Espejo|Vampiro
+mazo=Espejo de Anulacion|Espada de Rafflesia|Principe Oscuro|Pitbull|Ciclope|Piraña|Muro de Defensa|Berserker Soul|Pacto de la Sabiduria|Principe|Tarantula|Araña Aguja|Grieta de Poder
+trampas=Fortaleza Impenetrable
