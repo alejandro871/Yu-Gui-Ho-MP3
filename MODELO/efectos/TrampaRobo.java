@@ -2,7 +2,6 @@ package efectos;
 
 import cartas.Carta;
 import java.util.ArrayList;
-import java.util.Random;
 
 // obliga al rival a descartar una carta aleatoria de su mano
 public class TrampaRobo implements Efecto {

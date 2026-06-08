@@ -1,0 +1,15 @@
+[JUEGO]
+turno=y
+
+[JUGADOR1]
+nombre=w
+lp=7200
+mano=Veneno Oscuro|Berserker Soul|Caballero|Ciclope|Tarantula
+campo=Esqueleto|Zombie|Anguila
+cementerio=
+[JUGADOR2]
+nombre=y
+lp=6900
+mano=Golem Oscuro|Duende|Furia Nocturna|Pacto de la Sabiduria|Grieta de Poder
+campo=Guerrero
+cementerio=Piraña|Rayo Oscuro

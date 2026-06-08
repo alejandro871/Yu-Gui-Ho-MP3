@@ -1,5 +1,103 @@
 package PERSISTENCIA;
 
+import juego.Juego;
+import jugadores.Jugador;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import cartas.Carta;
+import cartas.Monstruo;
+import java.util.List;
+
+
 public class guardadorPartida {
+
+    public static void guardar(Juego juego) {
+
+    try {
+
+        BufferedWriter writer = new BufferedWriter(
+                new FileWriter("partida.txt")
+        );
+
+        Jugador j1 = juego.getJugador1();
+        Jugador j2 = juego.getJugador2();
+
+        writer.write("[JUEGO]");
+        writer.newLine();
+        writer.write("turno=" + juego.getJugadorActual().getNombre());
+        writer.newLine();
+        writer.newLine();
+
+        writer.write("[JUGADOR1]");
+        writer.newLine();
+        writer.write("nombre=" + j1.getNombre());
+        writer.newLine();
+        writer.write("lp=" + j1.getVida());
+        writer.newLine();
+        writer.write("mano=" + cartasAString(j1.getMano()));
+        writer.newLine();
+        writer.write("campo=" + monstruosAString(j1.getCampo()));
+        writer.newLine();
+        writer.write("cementerio=" + cartasAString(j1.getCementerio()));
+        writer.newLine();   
+        writer.newLine();  
+
+        writer.write("[JUGADOR2]");
+        writer.newLine();
+        writer.write("nombre=" + j2.getNombre());
+        writer.newLine();
+        writer.write("lp=" + j2.getVida());
+        writer.newLine();
+        writer.write("mano=" + cartasAString(j2.getMano()));
+        writer.newLine();
+        writer.write("campo=" + monstruosAString(j2.getCampo()));
+        writer.newLine();
+        writer.write("cementerio=" + cartasAString(j2.getCementerio()));
+        writer.newLine();
+
+        writer.close();
+
+        System.out.println("Partida guardada correctamente.");
+
+    } catch (IOException e) {
+
+        System.out.println("Error al guardar la partida.");
+        e.printStackTrace();
+    }
+}
+
+private static String cartasAString(java.util.List<Carta> cartas) {
+
+    StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < cartas.size(); i++) {
+
+        sb.append(cartas.get(i).getNombre());
+
+        if (i < cartas.size() - 1) {
+            sb.append("|");
+        }
+    }
+
+    return sb.toString();
+}
+
+private static String monstruosAString(java.util.List<Monstruo> monstruos) {
+
+    StringBuilder sb = new StringBuilder();
+
+    for (int i = 0; i < monstruos.size(); i++) {
+
+        sb.append(monstruos.get(i).getNombre());
+
+        if (i < monstruos.size() - 1) {
+            sb.append("|");
+        }
+    }
+
+    return sb.toString();
+}
+    
     
 }

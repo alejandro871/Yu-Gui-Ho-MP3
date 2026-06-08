@@ -61,6 +61,7 @@ public class Main {
         Mazo.repartir(jugador1, jugador2);
 
         Juego juego = new Juego(jugador1, jugador2);
+        
 
         controladorJuego controlador = new controladorJuego(juego, vista);
 
@@ -75,4 +76,5 @@ public class Main {
             pantalla.setVisible(true);
         });
     }
+
 }

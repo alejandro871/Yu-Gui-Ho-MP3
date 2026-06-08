@@ -283,4 +283,9 @@ public class Jugador {
     public ArrayList<CartaTrampa> getTrampas() { return trampas; }
     public int getCartasMazo() { return mazo.size(); }
     public boolean tieneTrampas() { return !trampas.isEmpty(); }
+
+    public ArrayList<Carta> getMazo() {
+
+        return mazo;
+    }
 }
