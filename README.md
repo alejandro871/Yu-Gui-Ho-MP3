@@ -72,7 +72,7 @@ partida.txt
 
 # 4. Agregar Historial y Ranking
 
-```md
+
 ## Estadísticas
 
 El sistema registra automáticamente:
