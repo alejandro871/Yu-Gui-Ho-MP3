@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import cartas.Carta;
 import cartas.Monstruo;
+import java.time.LocalDateTime;
 
 
 public class guardadorPartida {
@@ -25,6 +26,8 @@ public class guardadorPartida {
         writer.write("[JUEGO]");
         writer.newLine();
         writer.write("turno=" + juego.getJugadorActual().getNombre());
+        writer.newLine();
+        writer.write("fechaGuardado=" + LocalDateTime.now());
         writer.newLine();
         writer.newLine();
 

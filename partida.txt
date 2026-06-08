@@ -1,19 +1,20 @@
 [JUEGO]
-turno=Sativa
+turno=poste
+fechaGuardado=2026-06-08T14:52:18.229926
 
 [JUGADOR1]
-nombre=Pinky
-lp=4700
-mano=Bestia|Gigante|Golem Oscuro|Lagrima del Fénix|Curacion Divina|Sativa|Mago Electrico
-campo=Caballero Dorado|Rey Esqueleto
-cementerio=Zombie|Lombriz Sangrienta|Mago Oscuro|Golem|Pot of Greed
-mazo=Trampa Mortal|Drenaje de Vida|Giro del Destino|Anguila|Llamada del Cementerio|Mesini|Orden de Destruccion|Escudo de la Victoria|Furia Nocturna|Rayo Oscuro|Ladron de Almas
+nombre=anti
+lp=8000
+mano=Principe Oscuro|Furia Nocturna|Titan|Anguila|Escudo de la Victoria
+campo=
+cementerio=
+mazo=Pacto de la Sabiduria|Mago Oscuro|Llamada del Cementerio|Sativa|Rey Esqueleto|Leon|Caballero|Dragon Blanco|Golem|Duende|Gigante|Lagrima del Fénix|Lombriz Sangrienta|Grieta de Poder|Araña Aguja|Tarantula|Espejo de Anulacion|Mago Electrico|Vampiro|Berserker Soul
 trampas=
 [JUGADOR2]
-nombre=Sativa
+nombre=poste
 lp=8000
-mano=Mago|Veneno Oscuro|Leon|Duende|Caballero
-campo=Titan|Dragon Blanco|Guerrero
-cementerio=Esqueleto|Contraataque Espejo|Vampiro
-mazo=Espejo de Anulacion|Espada de Rafflesia|Principe Oscuro|Pitbull|Ciclope|Piraña|Muro de Defensa|Berserker Soul|Pacto de la Sabiduria|Principe|Tarantula|Araña Aguja|Grieta de Poder
-trampas=Fortaleza Impenetrable
+mano=Rayo Oscuro|Trampa Mortal|Espada de Rafflesia|Giro del Destino|Ladron de Almas
+campo=
+cementerio=
+mazo=Orden de Destruccion|Zombie|Golem Oscuro|Veneno Oscuro|Contraataque Espejo|Bestia|Fortaleza Impenetrable|Caballero Dorado|Piraña|Mesini|Ciclope|Curacion Divina|Principe|Esqueleto|Muro de Defensa|Drenaje de Vida|Pitbull|Guerrero|Pot of Greed|Mago
+trampas=
