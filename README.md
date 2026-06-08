@@ -1,4 +1,4 @@
-# 🃏 Mini Proyecto 3 — Yu-Gi-Oh! Simulador GUI
+# 🃏 Mini Proyecto 4 — Yu-Gi-Oh! Simulador GUI
 
 ## Integrantes
 
@@ -13,6 +13,20 @@ Permite que dos jugadores se enfrenten usando monstruos, cartas mágicas y carta
 todo a través de una interfaz visual con fondo oscuro temático.
 
 ---
+## Patrones de Diseño Implementados
+
+### Factory Method
+Permite reconstruir cartas a partir de su nombre utilizando una fábrica centralizada (`cartaFactory`).
+
+### Reflection Factory
+Permite crear dinámicamente cartas mágicas leyendo archivos de configuración y cargando sus efectos mediante Reflection.
+
+### Memento
+Permite almacenar instantáneas del estado de una partida para mantener historial de guardados.
+
+### MVC (Modelo Vista Controlador)
+El proyecto está organizado siguiendo el patrón MVC para separar lógica de negocio, interfaz gráfica y controladores.
+
 
 ## Instrucciones de ejecución
 
@@ -33,6 +47,42 @@ todo a través de una interfaz visual con fondo oscuro temático.
 4. Gana quien reduzca los LP del rival a 0 o lo haga quedarse sin cartas en el mazo
 
 ---
+
+## Persistencia de Partidas
+
+El sistema permite guardar y cargar partidas completas.
+
+La información almacenada incluye:
+
+- Turno actual
+- Life Points (LP)
+- Mano de cada jugador
+- Campo de monstruos
+- Cementerio
+- Cartas restantes del mazo
+- Cartas trampa colocadas
+- Fecha y hora del guardado
+
+Las partidas se almacenan en el archivo:
+
+partida.txt
+
+
+---
+
+# 4. Agregar Historial y Ranking
+
+```md
+## Estadísticas
+
+El sistema registra automáticamente:
+
+### Ranking de Victorias
+Se almacena la cantidad de victorias obtenidas por cada jugador.
+
+### Historial de Guardados
+Se registra la fecha y hora de cada guardado realizado durante las partidas.
+
 
 ## Cartas implementadas (50 en total)
 
@@ -57,12 +107,46 @@ Llamada del Cementerio, Fortaleza Impenetrable
 
 ## Conceptos OOP implementados
 
-| Concepto | Dónde se aplica |
-|---|---|
-| **Clases abstractas** | `Carta` — no se puede instanciar directamente |
-| **Herencia** | `Monstruo`, `CartaMagica`, `CartaTrampa` extienden `Carta` |
-| **Interfaces** | `Activable` (cartas con efectos), `Efecto` (lógica de efectos) |
-| **Encapsulamiento** | Atributos privados con getters/setters en todas las clases |
-| **Polimorfismo** | `Activable.activar(ctx)` — cada carta ejecuta su propio efecto |
+| Concepto | Implementación |
+|-----------|-----------|
+| Clases abstractas | Carta |
+| Herencia | Monstruo, CartaMagica y CartaTrampa |
+| Interfaces | Activable y Efecto |
+| Encapsulamiento | Atributos privados y getters/setters |
+| Polimorfismo | Activación dinámica de efectos |
+| Composición | Jugador contiene mano, campo, mazo y cementerio |
+| MVC | Separación Modelo-Vista-Controlador |
+| Factory | cartaFactory |
+| Reflection | reflectionFactory |
+| Memento | mementoPartida y caretakerPartida |
+| Colecciones | ArrayList, Stack, HashMap y TreeMap |
 
 ---
+
+## Estructura del Proyecto
+
+CONTROLADOR/
+FACTORY/
+MODELO/
+PATRONES/
+PERSISTENCIA/
+VISTA/
+CartasTXT/
+
+---
+
+## Funcionalidades Implementadas
+
+- Duelos completos entre dos jugadores
+- Invocación de monstruos
+- Cartas mágicas
+- Cartas trampa
+- Sistema de combate
+- Persistencia de partidas
+- Historial de guardados
+- Ranking de victorias
+- Reflection para carga dinámica de efectos
+- Patrón Factory
+- Patrón Memento
+- Interfaz gráfica con Swing
+- Modo consola
