@@ -9,6 +9,7 @@ import efectos.Contexto;
 import juego.Juego;
 import jugadores.Jugador;
 import PERSISTENCIA.guardadorPartida;
+import PERSISTENCIA.registroResultados;
 
 
 import java.util.ArrayList;
@@ -175,7 +176,6 @@ public class controladorJuego {
         verificarFin();
     }
 
-
     public void accionTerminarTurno() {
         vista.mostrarMensaje("\n[ Fase Final — "
                 + juego.getJugadorActual().getNombre() + " ]");
@@ -189,9 +189,21 @@ public class controladorJuego {
     }
 
     public boolean verificarFin() {
-        if (!juego.hayGanador()) return false;
-        vista.mostrarGanador(juego);
-        return true;
+        if (!juego.hayGanador()) {
+            return false;
+        }
+
+        registroResultados.registrarResultado(
+
+            juego.getJugador1().getNombre(),
+            juego.getJugador2().getNombre(),
+            juego.getNombreGanador()
+            );
+
+    vista.mostrarGanador(juego);
+
+    return true;
+    
     }
 
     public void iniciarBucleConsola() {

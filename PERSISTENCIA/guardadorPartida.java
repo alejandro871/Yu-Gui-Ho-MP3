@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import cartas.Carta;
 import cartas.Monstruo;
-import java.util.List;
 
 
 public class guardadorPartida {
