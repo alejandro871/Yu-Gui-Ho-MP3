@@ -45,6 +45,12 @@ public class reflectionFactory {
 
             Class<?> claseEfecto =Class.forName(clase);
 
+            if (!Efecto.class.isAssignableFrom(claseEfecto)) {
+
+                throw new IllegalArgumentException( "La clase " + clase  + " no implementa Efecto");
+
+            }
+
             Efecto efecto;
 
             if (valor == null) {
@@ -62,9 +68,13 @@ public class reflectionFactory {
 
         } catch (Exception e) {
 
+            System.out.println( "Error cargando carta mediante Reflection: " + archivo);
+
             e.printStackTrace();
 
             return null;
-        }
-    }
+
+            }
+      }
+
 }
