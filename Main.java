@@ -4,11 +4,13 @@ import jugadores.Jugador;
 import jugadores.Mazo;
 import VISTA.vistaConsola;
 import VISTA.PantallaInicio;
-
 import javax.swing.SwingUtilities;
 import java.util.Scanner;
+import PERSISTENCIA.estadisticas;
+import PERSISTENCIA.cargadorPartida;
 
 public class Main {
+    
 
     public static void main(String[] args) {
 
@@ -23,7 +25,8 @@ public class Main {
         System.out.println("║                                           ║");
         System.out.println("║   [1]  Modo Consola  (texto)              ║");
         System.out.println("║   [2]  Modo Gráfico  (GUI)                ║");
-        System.out.println("║                                           ║");
+        System.out.println("║   [3]  Ver Estadísticas                   ║");
+        System.out.println("║   [4]  Ver Partida Guardada               ║");
         System.out.println("╚═══════════════════════════════════════════╝");
         System.out.print("  Opcion: ");
 
@@ -38,6 +41,10 @@ public class Main {
             iniciarModoConsola(scanner);
         } else if (modo == 2) {
             iniciarModoGrafico();
+        } else if (modo == 3) {
+            estadisticas.mostrarVictorias();
+        } else if (modo == 4) {
+            cargadorPartida.mostrarArchivo();
         } else {
             System.out.println("Opcion no valida. Iniciando modo gráfico por defecto...");
             iniciarModoGrafico();
@@ -76,5 +83,6 @@ public class Main {
             pantalla.setVisible(true);
         });
     }
+    
 
 }
