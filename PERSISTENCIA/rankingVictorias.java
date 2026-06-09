@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,7 +48,7 @@ public class rankingVictorias {
 
         System.out.println();
         System.out.println("===== RANKING =====");
-        
+
         for (Map.Entry<String, Integer> entrada : ranking) {
 
             System.out.println( entrada.getKey() + " -> " + entrada.getValue() + " victorias");
