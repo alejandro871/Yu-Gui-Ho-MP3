@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
 
 
 public class Juego {
@@ -18,12 +20,14 @@ public class Juego {
     private boolean primerTurnoPartida;
     private ArrayList<EfectoTemporalAtk> efectosTemporalesActivos;
     private Queue<String> eventos;
+    private Set<String> cartasUtilizadas;
 
     public Juego(Jugador j1, Jugador j2) {
         this.jugador1 = j1;
         this.jugador2 = j2;
         this.efectosTemporalesActivos = new ArrayList<>();
         this.eventos = new LinkedList<>();
+        this.cartasUtilizadas = new HashSet<>();
 
         Random rand = new Random();
 
@@ -201,6 +205,36 @@ public class Juego {
     for (String evento : eventos) {
 
         sb.append("- ").append(evento).append("\n");
+    }
+
+    return sb.toString();
+}
+
+    public void registrarCartaUtilizada(String nombreCarta) {
+
+    cartasUtilizadas.add(nombreCarta);
+}
+
+    public Set<String> getCartasUtilizadas() {
+
+        return cartasUtilizadas;
+    }
+
+    public String mostrarCartasUtilizadas() {
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("===== CARTAS UTILIZADAS =====\n");
+
+    if (cartasUtilizadas.isEmpty()) {
+
+        sb.append("No hay cartas registradas.");
+        return sb.toString();
+    }
+
+    for (String carta : cartasUtilizadas) {
+
+        sb.append("- ").append(carta).append("\n");
     }
 
     return sb.toString();

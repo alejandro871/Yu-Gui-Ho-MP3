@@ -224,6 +224,7 @@ public class controladorJuego {
                     "Declarar ataque",
                     "Ver cementerio",
                     "Ver eventos",
+                    "Ver cartas utilizadas",
                     "Terminar turno"
                 };
                 int accion = vista.elegirOpcionMenu(
@@ -248,13 +249,15 @@ public class controladorJuego {
 
                     case 3:
 
-                        vista.mostrarInfo(
-                            "Eventos del duelo",
-                            juego.mostrarEventos()
-                        );
+                        vista.mostrarInfo("Eventos del duelo",juego.mostrarEventos());
                         break;
 
                     case 4:
+
+                        vista.mostrarInfo("Cartas utilizadas",juego.mostrarCartasUtilizadas());
+                        break;
+
+                    case 5:
 
                         turnoTerminado = true;
                         break;
@@ -301,6 +304,7 @@ public class controladorJuego {
             boolean ok = actual.invocarMonstruo(monstruo, sacrificio);
             if (ok) {
                 juego.registrarEvento(actual.getNombre() + " invocó " + monstruo.getNombre());
+                juego.registrarCartaUtilizada(monstruo.getNombre());
                 vista.mostrarMensaje( sacrificio.getNombre() + " sacrificado.");
                 vista.mostrarMensaje( monstruo.getNombre() + " invocado!" + "  ATK:" + monstruo.getAtk() + "  DEF:" + monstruo.getDef() + "  Nivel:" + monstruo.getNivel());
             }
@@ -308,6 +312,7 @@ public class controladorJuego {
             boolean ok = actual.invocarMonstruo(monstruo);
             if (ok) {
                 juego.registrarEvento(actual.getNombre() + " invocó " + monstruo.getNombre());
+                juego.registrarCartaUtilizada(monstruo.getNombre());
                 vista.mostrarMensaje(monstruo.getNombre() + " invocado al campo!" + "  ATK:" + monstruo.getAtk() + "  DEF:" + monstruo.getDef());
             }
         }
@@ -347,6 +352,7 @@ public class controladorJuego {
         boolean exito = actual.jugarMagia(carta);
         if (exito) {
             juego.registrarEvento(actual.getNombre() + " activó la magia " + carta.getNombre());
+            juego.registrarCartaUtilizada(carta.getNombre());
             carta.activar(ctx);
             vista.mostrarMensaje("  ¡Magia activada con éxito!");
         }
@@ -358,6 +364,7 @@ public class controladorJuego {
         if (ok) {
 
             juego.registrarEvento(actual.getNombre() + " colocó la trampa " + trampa.getNombre());
+            juego.registrarCartaUtilizada(trampa.getNombre());
             vista.mostrarMensaje("  Trampa colocada boca abajo. ¡El oponente no sabe qué es!");
         }
     }
