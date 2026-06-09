@@ -1,14 +1,18 @@
 import juego.Juego;
 import CONTROLADOR.controladorJuego;
+import PERSISTENCIA.rankingVictorias;
 import jugadores.Jugador;
 import jugadores.Mazo;
 import VISTA.vistaConsola;
 import VISTA.PantallaInicio;
-
 import javax.swing.SwingUtilities;
 import java.util.Scanner;
+import PERSISTENCIA.estadisticas;
+import PERSISTENCIA.cargadorPartida;
+import PERSISTENCIA.historialGuardados;
 
 public class Main {
+    
 
     public static void main(String[] args) {
 
@@ -23,7 +27,11 @@ public class Main {
         System.out.println("║                                           ║");
         System.out.println("║   [1]  Modo Consola  (texto)              ║");
         System.out.println("║   [2]  Modo Gráfico  (GUI)                ║");
-        System.out.println("║                                           ║");
+        System.out.println("║   [3]  Ver Estadísticas                   ║");
+        System.out.println("║   [4]  Ver Partida Guardada               ║");
+        System.out.println("║   [5]  Ver Ranking de Victorias           ║");
+        System.out.println("║   [6]  Ver Historial de Guardados         ║");
+        System.out.println("║   [7]  Cargar Partida Guardada            ║");
         System.out.println("╚═══════════════════════════════════════════╝");
         System.out.print("  Opcion: ");
 
@@ -38,10 +46,31 @@ public class Main {
             iniciarModoConsola(scanner);
         } else if (modo == 2) {
             iniciarModoGrafico();
-        } else {
+        } else if (modo == 3) {
+            estadisticas.mostrarVictorias();
+        } else if (modo == 4) {
+            cargadorPartida.mostrarArchivo();
+        } else if (modo == 5) {
+            rankingVictorias.mostrarRanking();
+        } else if (modo == 6) {
+            historialGuardados.mostrarHistorial();
+        } else if (modo==7) {
+
+             Juego juegoCargado = cargadorPartida.cargarJuego();
+
+                if (juegoCargado != null) {
+
+                    vistaConsola vista = new vistaConsola();
+
+                    controladorJuego controlador = new controladorJuego( juegoCargado, vista);
+
+                    controlador.iniciarBucleConsola();
+                }
+        }else {
             System.out.println("Opcion no valida. Iniciando modo gráfico por defecto...");
             iniciarModoGrafico();
         }
+   
     }
 
     private static void iniciarModoConsola(Scanner scanner) {
@@ -61,6 +90,7 @@ public class Main {
         Mazo.repartir(jugador1, jugador2);
 
         Juego juego = new Juego(jugador1, jugador2);
+        
 
         controladorJuego controlador = new controladorJuego(juego, vista);
 
@@ -75,4 +105,7 @@ public class Main {
             pantalla.setVisible(true);
         });
     }
+
+
+
 }

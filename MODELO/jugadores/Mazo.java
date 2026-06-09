@@ -12,9 +12,12 @@ import java.util.Collections;
 // creamos mazo y repartimos cartas
 public class Mazo {
 
+private static ArrayList<Carta> catalogo;
+
     // creamos y retornamos el mazo completo de 50 cartas
     public static ArrayList<Carta> crearMazo() {
         ArrayList<Carta> mazo = new ArrayList<>();
+        
 
         // MONSTRUOS (30 cartas)
 
@@ -185,4 +188,31 @@ public class Mazo {
                 + " y 25 para " + j2.getNombre()
                 + ". Cada uno tiene 5 en mano y 20 en mazo.");
     }
+
+        public static Carta buscarCartaPorNombre(String nombre) {
+
+        ArrayList<Carta> cartas = getCatalogo();
+
+        for (Carta carta : cartas) {
+
+                if (carta.getNombre().equalsIgnoreCase(nombre)) {
+
+                return carta;
+                }
+        }
+
+        return null;
+        }
+
+        private static ArrayList<Carta> getCatalogo() {
+
+        if (catalogo == null) {
+
+                catalogo = crearMazo();
+        }
+
+        return catalogo;
+        }
+
+
 }

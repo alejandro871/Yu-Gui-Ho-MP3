@@ -1,0 +1,4 @@
+nombre=Rayo Oscuro
+descripcion=Inflige 800 puntos de daño directo al oponente
+clase=efectos.DanioInstantaneo
+valor=800

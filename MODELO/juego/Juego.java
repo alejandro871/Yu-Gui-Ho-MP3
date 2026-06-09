@@ -2,27 +2,32 @@ package juego;
 
 import jugadores.Jugador;
 import efectos.EfectoTemporalAtk;
-
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
 
 
 public class Juego {
 
     private Jugador jugador1;
     private Jugador jugador2;
-
+    private int turnos;
     private Jugador jugadorActual;
     private Jugador jugadorEnemigo;
-
     private boolean primerTurnoPartida;
-
     private ArrayList<EfectoTemporalAtk> efectosTemporalesActivos;
+    private Queue<String> eventos;
+    private Set<String> cartasUtilizadas;
 
     public Juego(Jugador j1, Jugador j2) {
         this.jugador1 = j1;
         this.jugador2 = j2;
         this.efectosTemporalesActivos = new ArrayList<>();
+        this.eventos = new LinkedList<>();
+        this.cartasUtilizadas = new HashSet<>();
 
         Random rand = new Random();
 
@@ -35,6 +40,7 @@ public class Juego {
         }
 
         this.primerTurnoPartida = true;
+        this.turnos = 1;
 
         System.out.println("El azar ha decidido: " + jugadorActual.getNombre()
                 + " va primero. ¡Que comiece el duelo!");
@@ -85,6 +91,8 @@ public class Juego {
         primerTurnoPartida = false; 
 
         cambiarTurno();
+
+        turnos++;
 
         System.out.println("Turno terminado.");
     }
@@ -148,4 +156,88 @@ public class Juego {
     public Jugador getJugador2() {
         return jugador2;
     }
+
+    public void establecerTurno(Jugador jugador) {
+
+    if (jugador == jugador1) {
+
+        jugadorActual = jugador1;
+        jugadorEnemigo = jugador2;
+
+    } else {
+
+        jugadorActual = jugador2;
+        jugadorEnemigo = jugador1;
+    }
+}
+
+    public int getTurnos() {
+            
+        return turnos;
+    }
+
+    public void setTurnos(int turnos) {
+        this.turnos = turnos;
+    }
+
+    public void registrarEvento(String evento) {
+
+        eventos.offer(evento);
+    }
+
+    public Queue<String> getEventos() {
+
+        return eventos;
+    }
+
+    public String mostrarEventos() {
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("===== EVENTOS DEL DUELO =====\n");
+
+    if (eventos.isEmpty()) {
+
+        sb.append("No hay eventos registrados.");
+        return sb.toString();
+    }
+
+    for (String evento : eventos) {
+
+        sb.append("- ").append(evento).append("\n");
+    }
+
+    return sb.toString();
+}
+
+    public void registrarCartaUtilizada(String nombreCarta) {
+
+    cartasUtilizadas.add(nombreCarta);
+}
+
+    public Set<String> getCartasUtilizadas() {
+
+        return cartasUtilizadas;
+    }
+
+    public String mostrarCartasUtilizadas() {
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("===== CARTAS UTILIZADAS =====\n");
+
+    if (cartasUtilizadas.isEmpty()) {
+
+        sb.append("No hay cartas registradas.");
+        return sb.toString();
+    }
+
+    for (String carta : cartasUtilizadas) {
+
+        sb.append("- ").append(carta).append("\n");
+    }
+
+    return sb.toString();
+}
+
 }

@@ -5,13 +5,14 @@ import cartas.CartaTrampa;
 import cartas.Monstruo;
 import jugadores.Jugador;
 import juego.Juego;
-
+import PERSISTENCIA.registroResultados;
 import java.util.List;
 import java.util.Scanner;
 
 public class vistaConsola implements vistaJuego {
 
     private final Scanner scanner;
+    private boolean ganadorMostrado = false;
 
     public vistaConsola() {
         this.scanner = new Scanner(System.in);
@@ -123,11 +124,17 @@ public class vistaConsola implements vistaJuego {
         return resp.equals("s") || resp.equals("si") || resp.equals("sí");
     }
 
-
     @Override
     public void mostrarGanador(Juego juego) {
-        String ganador  = juego.getNombreGanador();
-        Jugador jGan    = juego.getGanador();
+
+        if (ganadorMostrado) {
+            return;
+        }
+
+        ganadorMostrado = true;
+    
+        String ganador = juego.getNombreGanador();
+        Jugador jGan = juego.getGanador();
         Jugador jPerder = (jGan == juego.getJugador1()) ? juego.getJugador2() : juego.getJugador1();
 
         System.out.println();
@@ -141,6 +148,17 @@ public class vistaConsola implements vistaJuego {
         System.out.println("║");
         System.out.println("║  \"Confía en el corazón de las cartas, Buena partida.\"");
         System.out.println("╚════════════════════════════════════════╝");
+
+        registroResultados.registrarResultado(
+
+        juego.getJugador1().getNombre(),
+        juego.getJugador2().getNombre(),
+        juego.getNombreGanador(),
+        juego.getTurnos(),
+        juego.getJugador1().getVida(),
+        juego.getJugador2().getVida()
+
+        );
     }
 
     @Override

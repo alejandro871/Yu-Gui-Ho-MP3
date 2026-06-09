@@ -18,6 +18,7 @@ public class controladorJuego {
     private final Juego juego;
     private final vistaJuego vista;
     private boolean yaRoboEsteTurno;
+    private boolean ganadorMostrado = false;
 
     public controladorJuego(Juego juego, vistaJuego vista) {
         this.juego = juego;
@@ -25,10 +26,12 @@ public class controladorJuego {
         this.yaRoboEsteTurno = false;
     }
 
-    public Juego   getJuego() { return juego; }
+    public Juego getJuego() { return juego; }
+
     public boolean isYaRoboEsteTurno() { return yaRoboEsteTurno; }
 
     public boolean accionRobar() {
+
         if (yaRoboEsteTurno) {
             vista.mostrarMensaje("  Ya robaste una carta este turno.");
             return true;
@@ -47,8 +50,8 @@ public class controladorJuego {
         List<Carta> mano = actual.getMano();
         if (!mano.isEmpty()) {
             Carta robada = mano.get(mano.size() - 1);
-            vista.mostrarMensaje("  → Robaste: " + robada.getNombre()
-                    + "  [" + robada.getTipo() + "]");
+            juego.registrarEvento(actual.getNombre() + " robó " + robada.getNombre());
+            vista.mostrarMensaje("  -> Robaste: " + robada.getNombre()+ "  [" + robada.getTipo() + "]");
         }
 
         yaRoboEsteTurno = true;
@@ -117,6 +120,7 @@ public class controladorJuego {
 
         vista.mostrarMensaje("\n[ Fase de Batalla ]");
         vista.mostrarMensaje("  " + actual.getNombre() + " ataca con: " + atacante.getNombre());
+        juego.registrarEvento( actual.getNombre() + " atacó con " + atacante.getNombre());
 
         Contexto ctxTrampa = procesarTrampasEnemigas(enemigo, actual, atacante);
         if (ctxTrampa != null && ctxTrampa.isAtaqueAnulado()) {
@@ -219,6 +223,8 @@ public class controladorJuego {
                     "Jugar carta de mano",
                     "Declarar ataque",
                     "Ver cementerio",
+                    "Ver eventos",
+                    "Ver cartas utilizadas",
                     "Terminar turno"
                 };
                 int accion = vista.elegirOpcionMenu(
@@ -242,6 +248,17 @@ public class controladorJuego {
                         break;
 
                     case 3:
+
+                        vista.mostrarInfo("Eventos del duelo",juego.mostrarEventos());
+                        break;
+
+                    case 4:
+
+                        vista.mostrarInfo("Cartas utilizadas",juego.mostrarCartasUtilizadas());
+                        break;
+
+                    case 5:
+
                         turnoTerminado = true;
                         break;
 
@@ -267,6 +284,7 @@ public class controladorJuego {
     }
 
     private void procesarInvocacion(Monstruo monstruo, Jugador actual) {
+
         vista.mostrarMensaje("\n[ Invocación: " + monstruo.getNombre() + " ]");
 
         if (monstruo.necesitaSacrificio()) {
@@ -285,12 +303,16 @@ public class controladorJuego {
 
             boolean ok = actual.invocarMonstruo(monstruo, sacrificio);
             if (ok) {
+                juego.registrarEvento(actual.getNombre() + " invocó " + monstruo.getNombre());
+                juego.registrarCartaUtilizada(monstruo.getNombre());
                 vista.mostrarMensaje( sacrificio.getNombre() + " sacrificado.");
                 vista.mostrarMensaje( monstruo.getNombre() + " invocado!" + "  ATK:" + monstruo.getAtk() + "  DEF:" + monstruo.getDef() + "  Nivel:" + monstruo.getNivel());
             }
         } else {
             boolean ok = actual.invocarMonstruo(monstruo);
             if (ok) {
+                juego.registrarEvento(actual.getNombre() + " invocó " + monstruo.getNombre());
+                juego.registrarCartaUtilizada(monstruo.getNombre());
                 vista.mostrarMensaje(monstruo.getNombre() + " invocado al campo!" + "  ATK:" + monstruo.getAtk() + "  DEF:" + monstruo.getDef());
             }
         }
@@ -329,6 +351,8 @@ public class controladorJuego {
 
         boolean exito = actual.jugarMagia(carta);
         if (exito) {
+            juego.registrarEvento(actual.getNombre() + " activó la magia " + carta.getNombre());
+            juego.registrarCartaUtilizada(carta.getNombre());
             carta.activar(ctx);
             vista.mostrarMensaje("  ¡Magia activada con éxito!");
         }
@@ -338,6 +362,9 @@ public class controladorJuego {
         vista.mostrarMensaje("\n[ Colocar Trampa ]");
         boolean ok = actual.colocarTrampa(trampa);
         if (ok) {
+
+            juego.registrarEvento(actual.getNombre() + " colocó la trampa " + trampa.getNombre());
+            juego.registrarCartaUtilizada(trampa.getNombre());
             vista.mostrarMensaje("  Trampa colocada boca abajo. ¡El oponente no sabe qué es!");
         }
     }
@@ -395,9 +422,18 @@ public class controladorJuego {
     }
 
     private void reiniciarDuelo(vistaConsola cv) {
+
         if (cv == null) return;
         cv.esperarEnter("Iniciando nuevo duelo...");
         cv.mostrarMensaje("Ingresa el nombre del Duelista 1: ");
         System.exit(0); 
     }
+
+    public void guardarPartida() {
+
+    PERSISTENCIA.guardadorPartida.guardar(juego);
+
+    vista.mostrarMensaje("Partida guardada correctamente.");
+    }
+
 }

@@ -8,13 +8,13 @@ import cartas.Monstruo;
 import juego.Juego;
 import jugadores.Jugador;
 import jugadores.Mazo;
-
+import PERSISTENCIA.guardadorPartida;
+import PERSISTENCIA.registroResultados;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class VentanaDuelo extends JFrame implements vistaJuego {
@@ -40,7 +40,6 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
     private final Jugador jugador1;
     private final Jugador jugador2;
     private final controladorJuego controlador;
-
     private JLabel labelNombreJ1, labelLpJ1, labelMazoJ1;
     private JLabel labelNombreJ2, labelLpJ2, labelMazoJ2;
     private JLabel labelTurnoActual, labelFase;
@@ -48,6 +47,7 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
     private JPanel panelCampoOponente, panelCampoJugador, panelManoJugador;
     private JTextArea areaLog;
     private JButton botonRobar, botonTerminarTurno;
+    private boolean ganadorRegistrado = false;
 
     public VentanaDuelo(String nombre1, String nombre2) {
         super("Yu-Gi-Oh! — " + nombre1 + " VS " + nombre2);
@@ -150,8 +150,14 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
 
     @Override
     public void mostrarGanador(Juego juego) {
-        String ganador    = juego.getNombreGanador();
-        Jugador jGan      = juego.getGanador();
+
+        if (ganadorRegistrado) {
+            return;
+        }
+        ganadorRegistrado = true;
+        
+        String ganador = juego.getNombreGanador();
+        Jugador jGan = juego.getGanador();
         Jugador jPerdedor = (jGan == jugador1) ? jugador2 : jugador1;
 
         registrarEnLog("");
@@ -165,8 +171,16 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
         botonRobar.setEnabled(false);
         botonTerminarTurno.setEnabled(false);
 
-        JOptionPane.showMessageDialog(this,
-                "  FIN DEL DUELO  \n\n"
+        registroResultados.registrarResultado(
+            juego.getJugador1().getNombre(),
+            juego.getJugador2().getNombre(),
+            juego.getNombreGanador(),
+            juego.getTurnos(),
+            juego.getJugador1().getVida(),
+            juego.getJugador2().getVida()
+        );
+
+        JOptionPane.showMessageDialog(this,"  FIN DEL DUELO  \n\n"
                 + "¡¡ " + ganador.toUpperCase() + " GANA EL DUELO !!\n\n"
                 + jGan.getNombre() + " termina con " + jGan.getVida() + " LP\n"
                 + jPerdedor.getNombre() + " termina con " + jPerdedor.getVida() + " LP\n\n"
@@ -206,10 +220,14 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
             controlador.verificarFin();
             return;
         }
+
+
         botonRobar.setEnabled(false);
         labelFase.setText("[Fase Principal]");
-        if (controlador.verificarFin()) return;
-        ofrecerNuevoDuelo();
+        if (controlador.verificarFin()){ 
+            ofrecerNuevoDuelo();
+            return;
+        }
     }
 
     private void accionJugarCartaDeMano(Carta carta) {
@@ -245,6 +263,18 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
                         + juego.getJugadorActual().getNombre(),
                 "Cambio de Turno", JOptionPane.INFORMATION_MESSAGE);
     }
+
+    private void accionguardarPartida() {
+        
+        controlador.guardarPartida();
+        JOptionPane.showMessageDialog(this,"Partida guardada correctamente.","Guardar Partida",
+        JOptionPane.INFORMATION_MESSAGE
+    );
+}
+
+    public void guardarPartida() {
+    guardadorPartida.guardar(juego);
+}
 
     private void accionCementerio() {
         Jugador actual  = juego.getJugadorActual();
@@ -387,7 +417,7 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
     }
 
     private JPanel crearPanelBotones() {
-        JPanel panel = new JPanel(new GridLayout(2, 2, 6, 6));
+        JPanel panel = new JPanel(new GridLayout(0, 2, 6, 6));
         panel.setBackground(FONDO_OSCURO);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 titledBorder("Acciones", COLOR_DORADO_OSCURO),
@@ -402,12 +432,16 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
         JButton botonCementerio = botonAccion("Cementerio", new Color(40, 40, 40));
         botonCementerio.addActionListener(e -> accionCementerio());
 
+        JButton botonGuardar = botonAccion("Guardar Partida",new Color(0, 100, 0));
+        botonGuardar.addActionListener(e -> accionguardarPartida());
+
         botonTerminarTurno = botonAccion("Terminar Turno", new Color(60, 40, 0));
         botonTerminarTurno.addActionListener(e -> accionTerminarTurno());
 
         panel.add(botonRobar);
         panel.add(botonAtacar);
         panel.add(botonCementerio);
+        panel.add(botonGuardar);
         panel.add(botonTerminarTurno);
         return panel;
     }
