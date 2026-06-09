@@ -2,9 +2,10 @@ package juego;
 
 import jugadores.Jugador;
 import efectos.EfectoTemporalAtk;
-
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Queue;
+import java.util.LinkedList;
 
 
 public class Juego {
@@ -16,11 +17,13 @@ public class Juego {
     private Jugador jugadorEnemigo;
     private boolean primerTurnoPartida;
     private ArrayList<EfectoTemporalAtk> efectosTemporalesActivos;
+    private Queue<String> eventos;
 
     public Juego(Jugador j1, Jugador j2) {
         this.jugador1 = j1;
         this.jugador2 = j2;
         this.efectosTemporalesActivos = new ArrayList<>();
+        this.eventos = new LinkedList<>();
 
         Random rand = new Random();
 
@@ -172,4 +175,35 @@ public class Juego {
     public void setTurnos(int turnos) {
         this.turnos = turnos;
     }
+
+    public void registrarEvento(String evento) {
+
+        eventos.offer(evento);
+    }
+
+    public Queue<String> getEventos() {
+
+        return eventos;
+    }
+
+    public String mostrarEventos() {
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("===== EVENTOS DEL DUELO =====\n");
+
+    if (eventos.isEmpty()) {
+
+        sb.append("No hay eventos registrados.");
+        return sb.toString();
+    }
+
+    for (String evento : eventos) {
+
+        sb.append("- ").append(evento).append("\n");
+    }
+
+    return sb.toString();
+}
+
 }
