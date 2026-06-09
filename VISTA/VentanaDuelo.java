@@ -9,7 +9,7 @@ import juego.Juego;
 import jugadores.Jugador;
 import jugadores.Mazo;
 import PERSISTENCIA.guardadorPartida;
-
+import PERSISTENCIA.registroResultados;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -47,6 +47,7 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
     private JPanel panelCampoOponente, panelCampoJugador, panelManoJugador;
     private JTextArea areaLog;
     private JButton botonRobar, botonTerminarTurno;
+    private boolean ganadorRegistrado = false;
 
     public VentanaDuelo(String nombre1, String nombre2) {
         super("Yu-Gi-Oh! — " + nombre1 + " VS " + nombre2);
@@ -149,8 +150,14 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
 
     @Override
     public void mostrarGanador(Juego juego) {
-        String ganador    = juego.getNombreGanador();
-        Jugador jGan      = juego.getGanador();
+
+        if (ganadorRegistrado) {
+            return;
+        }
+        ganadorRegistrado = true;
+        
+        String ganador = juego.getNombreGanador();
+        Jugador jGan = juego.getGanador();
         Jugador jPerdedor = (jGan == jugador1) ? jugador2 : jugador1;
 
         registrarEnLog("");
@@ -164,8 +171,16 @@ public class VentanaDuelo extends JFrame implements vistaJuego {
         botonRobar.setEnabled(false);
         botonTerminarTurno.setEnabled(false);
 
-        JOptionPane.showMessageDialog(this,
-                "  FIN DEL DUELO  \n\n"
+        registroResultados.registrarResultado(
+            juego.getJugador1().getNombre(),
+            juego.getJugador2().getNombre(),
+            juego.getNombreGanador(),
+            juego.getTurnos(),
+            juego.getJugador1().getVida(),
+            juego.getJugador2().getVida()
+        );
+
+        JOptionPane.showMessageDialog(this,"  FIN DEL DUELO  \n\n"
                 + "¡¡ " + ganador.toUpperCase() + " GANA EL DUELO !!\n\n"
                 + jGan.getNombre() + " termina con " + jGan.getVida() + " LP\n"
                 + jPerdedor.getNombre() + " termina con " + jPerdedor.getVida() + " LP\n\n"

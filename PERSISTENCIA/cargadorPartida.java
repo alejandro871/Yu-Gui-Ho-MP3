@@ -399,6 +399,10 @@ public class cargadorPartida {
 
     Juego juego = new Juego(j1, j2);
 
+    int turnosGuardados = cargarTurnos();
+
+    juego.setTurnos(turnosGuardados);
+
     String turnoGuardado = cargarTurno();
 
     if (turnoGuardado.equals(j1.getNombre())) {
@@ -414,6 +418,35 @@ public class cargadorPartida {
 
     return juego;
     }
+
+    public static int cargarTurnos() {
+
+        try {
+
+            BufferedReader reader = new BufferedReader(new FileReader("partida.txt"));
+
+            String linea;
+
+            while ((linea = reader.readLine()) != null) {
+
+                if (linea.startsWith("turnosJugados=")) {
+
+                    reader.close();
+
+                    return Integer.parseInt( linea.substring(15));
+                }
+            }
+
+            reader.close();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return 1;
+        
+        }
 
     public static mementoPartida crearMemento() {
 

@@ -94,6 +94,7 @@ private static String cartasAString( java.util.List<? extends Carta> cartas) {
 
     return sb.toString();
 }
+
 private static String monstruosAString(java.util.List<Monstruo> monstruos) {
 
     StringBuilder sb = new StringBuilder();

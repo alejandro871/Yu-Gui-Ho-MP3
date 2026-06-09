@@ -8,8 +8,6 @@ import cartas.Monstruo;
 import efectos.Contexto;
 import juego.Juego;
 import jugadores.Jugador;
-import PERSISTENCIA.guardadorPartida;
-import PERSISTENCIA.registroResultados;
 
 
 import java.util.ArrayList;
@@ -20,6 +18,7 @@ public class controladorJuego {
     private final Juego juego;
     private final vistaJuego vista;
     private boolean yaRoboEsteTurno;
+    
 
     public controladorJuego(Juego juego, vistaJuego vista) {
         this.juego = juego;
@@ -27,12 +26,8 @@ public class controladorJuego {
         this.yaRoboEsteTurno = false;
     }
 
-    public Juego getJuego() { return juego; }
+    public Juego   getJuego() { return juego; }
     public boolean isYaRoboEsteTurno() { return yaRoboEsteTurno; }
-    
-    public void guardarPartida() {
-        guardadorPartida.guardar(juego);
-    }   
 
     public boolean accionRobar() {
         if (yaRoboEsteTurno) {
@@ -88,7 +83,7 @@ public class controladorJuego {
     }
 
     public void accionAtacar() {
-        Jugador actual = juego.getJugadorActual();
+        Jugador actual  = juego.getJugadorActual();
         Jugador enemigo = juego.getJugadorEnemigo();
 
         if (!yaRoboEsteTurno) {
@@ -114,6 +109,7 @@ public class controladorJuego {
             return;
         }
 
+        // 1. Elegir atacante
         Monstruo atacante = vista.elegirMonstruo(disponibles, "Elige tu monstruo atacante");
         if (atacante == null) {
             vista.mostrarMensaje("  Ataque cancelado.");
@@ -159,10 +155,11 @@ public class controladorJuego {
         }
 
         int lpEnemigoAntes = enemigo.getVida();
-        int lpPropioAntes = actual.getVida();
+        int lpPropioAntes  = actual.getVida();
 
         actual.atacarConMonstruo(atacante, enemigo, defensor);
 
+        // Reportar diferencias de LP en el log de la vista
         if (enemigo.getVida() < lpEnemigoAntes) {
             vista.mostrarMensaje("  → " + enemigo.getNombre()
                     + " pierde " + (lpEnemigoAntes - enemigo.getVida()) + " LP  ->  "
@@ -189,21 +186,9 @@ public class controladorJuego {
     }
 
     public boolean verificarFin() {
-        if (!juego.hayGanador()) {
-            return false;
-        }
-
-        registroResultados.registrarResultado(
-
-            juego.getJugador1().getNombre(),
-            juego.getJugador2().getNombre(),
-            juego.getNombreGanador()
-            );
-
-    vista.mostrarGanador(juego);
-
-    return true;
-    
+        if (!juego.hayGanador()) return false;
+        vista.mostrarGanador(juego);
+        return true;
     }
 
     public void iniciarBucleConsola() {
@@ -235,7 +220,6 @@ public class controladorJuego {
                     "Jugar carta de mano",
                     "Declarar ataque",
                     "Ver cementerio",
-                    "Guardar partida",
                     "Terminar turno"
                 };
                 int accion = vista.elegirOpcionMenu(
@@ -259,11 +243,6 @@ public class controladorJuego {
                         break;
 
                     case 3:
-                        guardarPartida();
-                        vista.mostrarMensaje("Partida guardada correctamente.");
-                        break;
-                        
-                    case 4:
                         turnoTerminado = true;
                         break;
 
@@ -417,9 +396,18 @@ public class controladorJuego {
     }
 
     private void reiniciarDuelo(vistaConsola cv) {
+
         if (cv == null) return;
         cv.esperarEnter("Iniciando nuevo duelo...");
         cv.mostrarMensaje("Ingresa el nombre del Duelista 1: ");
         System.exit(0); 
     }
+
+    public void guardarPartida() {
+
+    PERSISTENCIA.guardadorPartida.guardar(juego);
+
+    vista.mostrarMensaje("Partida guardada correctamente.");
+    }
+
 }
