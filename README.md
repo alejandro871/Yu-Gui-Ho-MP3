@@ -6,6 +6,12 @@
 
 ---
 
+## Kanban Flow
+
+* https://kanbanflow.com/board/d2ybwUJ
+
+---
+
 # Descripción
 
 Simulador de duelo de Yu-Gi-Oh! desarrollado en Java 21 utilizando programación orientada a objetos, arquitectura MVC, patrones de diseño y persistencia de datos.
